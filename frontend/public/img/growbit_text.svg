@@ -1,0 +1,21 @@
+<svg width="320" height="60" viewBox="0 0 320 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Stylized G mark (matches reference screenshots) -->
+  <g transform="translate(0, 2)">
+    <!-- Outer G body -->
+    <path d="M 48 4 L 20 4 C 12 4 6 10 4 18 L 0 32 C -1 38 2 44 8 50 C 12 54 18 56 26 56 L 50 56 L 56 34 L 36 34 L 33 44 L 24 44 C 20 44 17 42 16 38 L 20 22 C 21 18 25 16 29 16 L 50 16 L 54 4 Z" fill="#C6CAFF"/>
+    <!-- Inner G cutout bar -->
+    <path d="M 38 34 L 56 34 L 53 44 L 35 44 Z" fill="#0c0b1c"/>
+  </g>
+
+  <!-- GROWBIT. text -->
+  <text
+    x="70"
+    y="47"
+    font-family="Arial Black, Impact, 'Anton', sans-serif"
+    font-size="38"
+    font-weight="900"
+    font-style="italic"
+    fill="white"
+    letter-spacing="-1"
+  >GROWBIT.</text>
+</svg>
