@@ -130,21 +130,21 @@ export default {
   data() {
     return {
       showOptions: false,
-      selectedCoin: null, // Guardamos el objeto completo aquí
-      currency: null,     // Tu v-model original para el ticke
+      selectedCoin: null, 
+      currency: null,     
       amount: 0,
       loading: false,
-      currenciesList: [], // Para almacenar las monedas de la API
+      currenciesList: [], 
       paymentData: null,
     };
   },
   components: { AppButton, Currency,QrcodeVue },
   computed: {
-  // SC es amount * 1
+  // SC is amount * 1
   calculatedSC() {
     return this.amount > 0 ? this.amount : 0;
   },
-  // GC es amount * 100 (según tu lógica de 1 unidad : 100 unidades)
+  // GC is amount * 100 
   calculatedGC() {
     return this.amount > 0 ? this.amount * 100 : 0;
   }
@@ -153,7 +153,7 @@ export default {
 
   mounted() {
     this.fetchCurrencies();
-  // 1. Obtenemos el socket del namespace 'cashier' desde Vuex
+  
   const cashierSocket = this.$store.getters["socketCashier"];
 
  if (cashierSocket) {
@@ -163,24 +163,24 @@ export default {
         this.$store.commit("auth_update_user", data.user);
       }
       console.log('Socket PAYMENT_SUCCESS');
-      // 2. Limpiar datos para evitar que se use el mismo ID de factura
+     
       this.paymentData = null; 
       this.isGenerating = false;
 
       // 3. Notificación estilo casino
-      const addedAmount = data.added || 0;
+      const addedAmount = data.added ? data.added.sc : 0;
       this.$store.dispatch("notificationShow", {
         type: "success",
         message: `¡Depósito acreditado! +${addedAmount.toFixed(2)} USD.`
       });
 
-      // 4. Cerrar el modal usando el sistema de tu store
+      //  Cerrar modal
       this.$store.dispatch("modalsSetShow", null);
     });
   }
   },
   beforeDestroy() {
- // MUY IMPORTANTE: Usar el getter para hacer el .off() y evitar fugas de memoria
+ 
   const cashierSocket = this.$store.getters["socketCashier"];
   if (cashierSocket) {
     cashierSocket.off("PAYMENT_SUCCESS");
@@ -189,7 +189,7 @@ export default {
    document.removeEventListener("click", this.closeOnOutsideClick);
   },
   created() {
-    // Escuchamos clics globales cuando el componente se crea
+   
     document.addEventListener("click", this.closeOnOutsideClick);
   },
  
@@ -197,7 +197,7 @@ export default {
     ...mapActions(["notificationShow","modalsSetShow"]),
     selectCurrency(coin) {
     this.selectedCoin = coin;
-    this.currency = coin.code; // Para que tu método de pago siga funcionando
+    this.currency = coin.code; 
     this.showOptions = false;
   },
   // --- Esta es la función mágica que cierra el menú ---
@@ -298,12 +298,12 @@ export default {
   flex-direction: column;
   padding: 30px;
   gap: 20px;
-  background: #0f0e26; // Fondo oscuro tipo casino
+  background: #0f0e26; 
   width: 100%;
 
 
   .qr-wrapper.custom-dark-style {
-  background: #1a1d23; /* Color oscuro de tu casino */
+  background: #1a1d23; 
   padding: 20px;
   border: 1px solid #2d323e;
   color: #fff;
@@ -313,7 +313,7 @@ export default {
 }
 
 .qr-container {
-  background: #fff; /* El QR suele necesitar fondo blanco para escanearse bien */
+  background: #fff; 
   padding: 10px;
   border-radius: 8px;
   margin: 20px 0;
@@ -357,7 +357,7 @@ export default {
 
 .payment-widget-container {
   margin-top: 20px;
-    background: #ffffff; // Fondo blanco para que el widget se integre perfectamente
+    background: #ffffff; 
     border-radius: 12px;
     overflow: hidden;
     padding: 10px;
@@ -398,7 +398,7 @@ export default {
   to { opacity: 1; transform: translateY(0); }
 }
 
-  // --- Estilos del Dropdown Personalizado ---
+  
   .custom-dropdown {
     position: relative;
     width: 100%;

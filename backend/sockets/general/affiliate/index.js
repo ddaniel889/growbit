@@ -24,11 +24,10 @@ const {
 
 module.exports = (io, socket) => {
 
-  // LÓGICA DE SALA PRIVADA PARA DEPÓSITOS
   if (socket.decoded !== undefined && socket.decoded !== null) {
     const userId = socket.decoded._id.toString();
     socket.join(userId);
-    console.log(`[SOCKET] Usuario ${userId} unido a su sala privada de pagos`);
+    console.log(`[SOCKET] Usuario ${userId} unido a su sesión privada`);
   }
   
   socket.on("getAffiliateData", async (data, callback) => {

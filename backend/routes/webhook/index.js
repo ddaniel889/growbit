@@ -12,7 +12,8 @@ module.exports = (io) => {
         logger.info("--- NUEVO WEBHOOK RECIBIDO ---");
         console.log("--- NUEVO WEBHOOK RECIBIDO ---")
         logger.info(JSON.stringify(req.body, null, 2));
-        console.log(logger.info(JSON.stringify(req.body, null, 2)));
+        console.log('Log req.body req.body')
+        console.log(JSON.stringify(req.body, null, 2));
         try {
             const paymentData = req.body;
           //  const hmac = req.headers['x-nowpayments-sig'];
@@ -32,8 +33,8 @@ module.exports = (io) => {
     
     const paymentId = paymentData.payment_id;
     const userId = paymentData.order_id.split('_')[1];
-    logger.info(`[WEBHOOK] Procesando pago para el usuario ID: ${userId}`);
-    console.log(`[WEBHOOK] Procesando pago para el usuario ID: ${userId}`);
+    logger.info(`[WEBHOOK] Procesando depósito para el usuario ID: ${userId}`);
+    console.log(`[WEBHOOK] Procesando depósito para el usuario ID: ${userId}`);
     const amountReceived = parseFloat(paymentData.actually_paid);
 
     const scAmount = amountReceived;          
@@ -81,10 +82,10 @@ module.exports = (io) => {
         // Usamos el evento que espera el frontend con el objeto user completo
 
     const targetRoom = userId.toString();
-    if (updatedUser) {
+    if (userId !='') {
        // 1. ACTUALIZACIÓN GLOBAL (Para que el Header suba el saldo)
     // Usamos el namespace /general porque LayoutHeader.vue escucha ahí el evento "user"
-    io.of("/general").to(targetRoom).emit("user", {
+    io.of("/general").to(targetRoom).emit("user", {//
         user: updatedUser
     });
 
@@ -102,10 +103,7 @@ module.exports = (io) => {
     console.log(`✅ Successful deposit for ${updatedUser.username}`);
 
 
-         /* added: {
-                sc: scAmount,
-                gc: gcAmount
-            }*/
+         
 
         }    
      
