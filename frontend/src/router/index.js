@@ -122,6 +122,11 @@ const AdminBanners = () =>
     /* webpackChunkName: "group-admin" */ "../views/admin/AdminBanners.vue"
   );
 
+const AdminCoins = () =>
+  import(
+    /* webpackChunkName: "group-admin" */ "../views/admin/AdminCoins.vue"
+  );  
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -430,6 +435,11 @@ const routes = [
         path: "banners",
         name: "AdminBanners",
         component: AdminBanners,
+      },
+       {
+        path: "coins",
+        name: "AdminCoins",
+        component: AdminCoins,
       },
     ],
   },

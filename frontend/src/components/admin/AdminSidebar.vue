@@ -54,6 +54,7 @@ import {
   RefreshCcw,
   Gamepad2,
   ExternalLink,
+  Coins
 } from "lucide-vue";
 import SidebarItem from "@/components/sidebar/SidebarItem.vue";
 
@@ -94,6 +95,7 @@ export default {
             { name: "Challenges", url: "/admin/challenges", icon: Swords },
             { name: "Banners", url: "/admin/banners", icon: Tag },
             { name: "Settings", url: "/admin/settings", icon: Settings },
+            { name: "Coins", url: "/admin/coins", icon: Coins },
           ],
         },
       ],
