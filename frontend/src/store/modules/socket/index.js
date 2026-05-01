@@ -1,6 +1,6 @@
 import socketIo from "socket.io-client";
 const SOCKET_URL =
-  process.env.VUE_APP_SOCKET_URL || "https://99wiwi.onrender.com";
+  process.env.VUE_APP_SOCKET_URL || "https://growbit-backend.onrender.com";
 
 const state = {
   socketSendLoading: null,

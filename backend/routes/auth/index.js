@@ -24,7 +24,7 @@ module.exports = () => {
       try {
         let userDatabase = await User.findById(req.user._id)
           .select(
-            "local.email +discordToken discordId local.emailVerified ignoreList favouriteSlots username avatar rank balance claimedKeys rewards stats rakeback fair anonymous mute ban verifiedAt updatedAt createdAt"
+            "local.email +discordToken discordId local.emailVerified ignoreList favouriteSlots username avatar rank balance wallet claimedKeys rewards stats rakeback fair anonymous mute ban verifiedAt updatedAt createdAt"
           )
           .lean();
 

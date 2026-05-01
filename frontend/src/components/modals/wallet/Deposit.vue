@@ -222,7 +222,7 @@ export default {
     async fetchCurrencies() {
       try {
         // Consumimos tu endpoint de Node
-        const response = await axios.get('http://localhost:4444/api/full-currencies');
+        const response = await axios.get(`${process.env.VUE_APP_BACKEND_URL}/full-currencies`);
         // Filtramos para asegurar que tenemos tickers válidos
         console.log('response',response)
         this.currenciesList = response.data.sort((a, b) => a.name.localeCompare(b.name));
@@ -258,7 +258,7 @@ export default {
 
     this.loading = true;
     try {
-      const response = await axios.post('http://localhost:4444/api/payment/create', {
+      const response = await axios.post(`${process.env.VUE_APP_BACKEND_URL}/payment/create`, {
         amount: this.amount,
         currency: this.currency,
       });

@@ -10,10 +10,6 @@ const state = {
   authUser: {
     user: null,
     loading: false,
-    wallet: {  // sc y gc
-      sc: 0,
-      gc: 0
-    }
   },
 };
 
@@ -36,6 +32,7 @@ const mutations = {
   auth_update_user(state, user) {
     const fieldsToUpdate = [
       "balance",
+      "wallet",
       "stats",
       "ban",
       "discordId",

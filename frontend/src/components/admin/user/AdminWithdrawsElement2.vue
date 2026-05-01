@@ -47,7 +47,7 @@ export default {
     async verifyPayout() {
       this.loading = true;
       try {
-        const response = await axios.post('http://localhost:4444/api/payout/verify-payout', {
+        const response = await axios.post(`${process.env.VUE_APP_BACKEND_URL}/payout/verify-payout`, {
           batch_id: this.transaction.batch_id,
           verification_code: this.verificationCode
         });

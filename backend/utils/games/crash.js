@@ -39,7 +39,11 @@ const crashCheckSendBetData = (data) => {
 };
 
 const crashCheckSendBetUser = (data, user, crashBets) => {
-  if (user.balance < data.amount) {
+   const hasEnoughBalance = user.balance >= data.amount;
+   const hasEnoughSC = user.wallet && user.wallet.sc >= data.amount;
+   const hasEnoughGC = user.wallet && user.wallet.gc >= data.amount;
+
+  if (!hasEnoughSC) {
     throw new Error("You don’t have enough balance for this action.");
   } else if (
     crashBets.some(

@@ -98,7 +98,11 @@ const battlesCheckSendCreateBoxes = (data) => {
 };
 
 const battlesCheckSendCreateUser = (user, data, amount) => {
-  if (user.balance < amount) {
+    const hasEnoughBalance = user.balance >= amount;
+  const hasEnoughSC = user.wallet && user.wallet.sc >= amount;
+  const hasEnoughGC = user.wallet && user.wallet.gc >= amount;
+
+  if (!hasEnoughSC) {
     throw new Error("You don’t have enough balance for this action.");
   }
 };
@@ -212,7 +216,10 @@ const battlesCheckSendJoinGame = (
 };
 
 const battlesCheckSendJoinUser = (user, battlesGame) => {
-  if (user.balance < battlesGame.amount) {
+  const hasEnoughBalance = user.balance >= battlesGame.amount;
+  const hasEnoughSC = user.wallet && user.wallet.sc >= battlesGame.amount;
+  const hasEnoughGC = user.wallet && user.wallet.gc >= battlesGame.amount;
+  if (!hasEnoughSC) {
     throw new Error("You don’t have enough balance for this action.");
   }
 };

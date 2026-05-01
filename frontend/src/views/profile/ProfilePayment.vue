@@ -65,7 +65,7 @@ export default {
     async fetchCurrencies() {
       this.loadingCurrencies = true;
    try {
-    const response = await axios.get('http://localhost:4444/api/full-currencies');
+    const response = await axios.get(`${process.env.VUE_APP_BACKEND_URL}/full-currencies`);
     
     // Si la imagen muestra exactamente [ "usdttrc20", ... ], 
     // entonces response.data es el array.
@@ -89,7 +89,7 @@ export default {
     async generatePayment() {
       this.loading = true;
       try {
-        const response = await axios.post('http://localhost:4444/api/create-payment', {
+        const response = await axios.post(`${process.env.VUE_APP_BACKEND_URL}/create-payment`, {
           amount: this.amount,
           currency: this.currency,
           order_id: this.orderId

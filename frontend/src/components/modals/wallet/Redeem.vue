@@ -58,7 +58,7 @@
   <app-button 
       :fullwidth="true" 
       :click="handleWithdraw" 
-      :disabled="amount < 10 || !walletAddress || loading || !canWithdraw"
+      :disabled="amount < 10 || !walletAddress  || !canWithdraw"
       :height="'50px'"
     >
         {{ loading ? 'Processing...' : 'Withdraw SC' }}
@@ -94,7 +94,7 @@ export default {
     
     // Validación para el botón
     canWithdraw() {
-      return this.amount > this.currentNetworkFee && this.amount >= 15;
+      return this.amount > this.currentNetworkFee;
     }
   },
   components: { AppButton, Currency },
@@ -138,7 +138,7 @@ export default {
     const currency = tickerMap[this.selectedNetwork];
         // Enviamos el ticker como parámetro de consulta (?currency=...)
     // Enviamos AMBOS parámetros requeridos
-        const { data } = await axios.get(`http://localhost:4444/api/payout_fee`, {
+        const { data } = await axios.get(`${process.env.VUE_APP_BACKEND_URL}/payout_fee`, {
           params: { 
             currency: currency,
             amount: this.amount || 15 // Enviamos 15 como fallback si amount es 0
@@ -169,7 +169,7 @@ export default {
 
       try {
         // 2. Consulta de Custodia antes de procesar
-        const balanceRes = await axios.get('http://localhost:4444/api/custody_balance');
+        const balanceRes = await axios.get(`${process.env.VUE_APP_BACKEND_URL}/custody_balance`);
         const balances = balanceRes.data;
 
         // Mapeo de tu select al ticker de la API de NOWPayments
@@ -196,7 +196,7 @@ export default {
         }
 
         // 4. Si hay balance, ejecutamos el payout
-        const response = await axios.post('http://localhost:4444/api/payout', {
+        const response = await axios.post(`${process.env.VUE_APP_BACKEND_URL}/payout`, {
           amount: this.amount,
           address: this.walletAddress,
           network: this.selectedNetwork // Enviamos la red dinámicamente
@@ -215,6 +215,10 @@ export default {
        
 
       } catch (error) {
+        console.log('error',error)
+     if (error && error.status === 400) {
+         console.log('error')
+       }
         this.notificationShow({
           type: "error",
           message: error.response?.data?.error || "Error processing withdrawal"
@@ -225,7 +229,7 @@ export default {
     },
 
     async saveCurrentAddress() {
-      // Tu lógica de guardado existente...
+      console.log('saveCurrentAddress')
     },
     
 

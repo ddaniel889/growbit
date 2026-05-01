@@ -1,54 +1,62 @@
 // services/mailService.js
 const imaps = require('imap-simple');
 const { simpleParser } = require('mailparser');
+const _ = require('lodash'); // ¡No olvides importar lodash!
 
-// El código que tienes en tu imagen
 async function getVerificationCode() {
     const config = {
         imap: {
-            user: process.env.EMAIL_USER, 
-            password: process.env.EMAIL_APP_PASSWORD,
+            user: process.env.NOWPAYMENTS_EMAIL, 
+            password: process.env.EMAIL_APP_PASSWORD, // 'ajom iame...'
             host: 'imap.gmail.com',
             port: 993,
             tls: true,
-            authTimeout: 3000
+            authTimeout: 5000 // Un poco más de tiempo por si Gmail está lento
         }
     };
 
+    let connection;
+
     try {
-        const connection = await imaps.connect(config);
+        connection = await imaps.connect(config);
         await connection.openBox('INBOX');
 
-        // ... resto de la lógica de búsqueda y regex
-        // Buscamos correos no leídos de NOWPayments de los últimos 2 minutos
-        const delay = 2 * 60 * 1000;
-        const yesterday = new Date();
-        yesterday.setTime(Date.now() - delay);
+        // Criterio: No leídos, de NowPayments, de los últimos 5 minutos (más seguro)
+        const delay = 5 * 60 * 1000;
+        const sinceDate = new Date(Date.now() - delay);
         
-        const searchCriteria = ['UNSEEN', ['FROM', 'noreply@nowpayments.io'], ['SINCE', yesterday]];
+        const searchCriteria = ['UNSEEN', ['FROM', 'noreply@nowpayments.io'], ['SINCE', sinceDate]];
         const fetchOptions = { bodies: ['HEADER', 'TEXT'], markSeen: true };
 
         const messages = await connection.search(searchCriteria, fetchOptions);
 
         if (messages.length === 0) {
+            console.log("[mailService] No se encontraron correos nuevos de NowPayments.");
             connection.end();
             return null;
         }
 
-        // Parseamos el cuerpo del mensaje
-        const all = _.find(messages[0].parts, { which: 'TEXT' });
-        const mail = await simpleParser(all.body);
+        // Obtener el último mensaje recibido (el más reciente)
+        const lastMessage = messages[messages.length - 1];
+        const textPart = _.find(lastMessage.parts, { which: 'TEXT' });
+        const mail = await simpleParser(textPart.body);
         
-        // Extraemos el código de 6 dígitos usando Regex
+        // Regex para capturar el código de 2FA
+        // Buscamos específicamente el patrón que suele enviar NowPayments
         const codeMatch = mail.text.match(/\b\d{6}\b/);
+        
         connection.end();
 
-        return codeMatch ? codeMatch[0] : null;
+        if (codeMatch) {
+            console.log(`[mailService] Código encontrado: ${codeMatch[0]}`);
+            return codeMatch[0];
+        }
+
+        return null;
         
-        //connection.end();
-        return code; // Retorna los 6 dígitos
     } catch (err) {
-        console.error("Error en mailService:", err);
+        if (connection) connection.end();
+        console.error("Error crítico en mailService:", err.message);
         return null;
     }
 }

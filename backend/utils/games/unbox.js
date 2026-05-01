@@ -70,7 +70,10 @@ const unboxCheckSendBetBox = (boxDatabase) => {
 };
 
 const unboxCheckSendBetUser = (user, amountBetTotal) => {
-  if (user.balance < amountBetTotal) {
+  const hasEnoughBalance = user.balance >= amountBetTotal;
+  const hasEnoughSC = user.wallet && user.wallet.sc >= amountBetTotal;
+  const hasEnoughGC = user.wallet && user.wallet.gc >= amountBetTotal;
+  if (!hasEnoughSC) {
     throw new Error("You don’t have enough balance for this action.");
   }
 };

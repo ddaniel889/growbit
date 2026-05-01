@@ -22,7 +22,7 @@ const {
 } = require("../../../utils/general/chat");
 const { logger } = require("../../../utils/logger");
 const fs = require("fs");
-const { ignore } = require("nodemon/lib/rules");
+
 const LRUCache = require("lru-cache");
 
 // General chat variables

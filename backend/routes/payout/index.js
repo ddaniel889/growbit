@@ -34,56 +34,68 @@ module.exports = () => {
         }
     });
 
-    router.post('/', [authorizeUser(true)], async (req, res) => { 
+  router.post('/', [authorizeUser(true)], async (req, res) => { 
+    let userModel; 
+    const { amount, address, network } = req.body;
+
     try {
-        let user;
         const currencyMapping = {
-             trc20: "usdttrc20",
-             erc20: "usdterc20",
-             bep20: "usdtbep20"
+            trc20: "usdttrc20",
+            erc20: "usdterc20",
+            bep20: "usdtbep20"
         };
 
-        const { amount, address, network } = req.body;
         const targetCurrency = currencyMapping[network];
+
+        // --- NUEVA VALIDACIÓN DE MÍNIMO DINÁMICO ---
+        const minRequired = await getNowPaymentsMinAmount(targetCurrency);
+
+        console.log('monto retiro solicitado',minRequired)
+        
+        if (minRequired && amount < minRequired) {
+            return res.status(400).json({ 
+                error: `The amount is less than the minimum allowed by the network.`,
+                minimum_required: minRequired,
+                currency: targetCurrency
+            });
+        } 
         const userId = req.user._id;
 
-        // --- Network validation ---
-       /* const tronRegex = /^T[a-zA-Z0-9]{33,34}$/;
-        if (!address || !tronRegex.test(address)) {
-            return res.status(400).json({ error: "Invalid TRC20 address format. It must start with 'T'." });
-        }*/
-
-
-        // 1. Validar el mínimo de 100 SC (Requisito del cliente)
-        if (amount < 10) { //amount < 100 validacion real
-            return res.status(400).json({ error: "Minimum withdrawal is 100 SC" });
+        if (amount < 10) { 
+            return res.status(400).json({ error: "Minimum withdrawal is 10 SC" });
         }
 
-        user = await User.findById(userId);
-        if (!user || user.wallet.sc < amount) {
+        userModel = await User.findById(userId);
+        
+        if (!userModel || userModel.wallet.sc < amount) {
             return res.status(400).json({ error: "Insufficient SC balance" });
         }
 
-        user.wallet.sc -= amount;
-        await user.save();
-
-        const authResponse = await axios.post(`${API_URL}/auth`, {
+        let token;
+        try {
+            console.log("Intentando autenticar con NowPayments...");
+            const authResponse = await axios.post(`${API_URL}/auth`, {
                 email: process.env.NOWPAYMENTS_EMAIL,
-                password: process.env.NOWPAYMENTS_APP_PASSWORD
+                password: process.env.NOWPAYMENTS_PASSWORD
+            }, { timeout: 10000 });
+            
+            token = authResponse.data.token; // <--- CORREGIDO: sin el 'const'
+            console.log('¡Token obtenido con éxito!');
+        } catch (authErr) {
+            console.error("Error en Auth NowPayments:", authErr.response?.data || authErr.message);
+            return res.status(401).json({ 
+                success: false, 
+                error: "NowPayments authentication failed. Check credentials." 
             });
-        const token = authResponse.data.token;
-        console.log('token AUTH',token)
+        }
 
-        // call NowPayments
+        // Restar saldo
+        userModel.wallet.sc -= amount;
+        await userModel.save();
+
+        // Llamada a Payout
         const response = await axios.post(`${API_URL}/payout`, {
-            withdrawals: [
-                {
-                    address: address,
-                    currency: targetCurrency,
-                    amount: amount,
-                    //ipn_id: "tu_id_de_payouts" // Configurado en NowPayments
-                }
-            ]
+            withdrawals: [{ address, currency: targetCurrency, amount }]
         }, {
             headers: {
                 'x-api-key': process.env.NOWPAYMENTS_API_KEY,
@@ -92,54 +104,50 @@ module.exports = () => {
             }
         });
 
-        // -- AUTOMATION --
-            console.log(response.data)
-            //const batchId = response.data.id; 
-            const batchId = response?.data?.id || response?.data?.batch_id;
+        const batchId = response?.data?.id || response?.data?.batch_id;
 
-            await BalanceTransaction.create({
-                user: userId,
-                type: "withdraw",
-                state: "created",
-                providerId: batchId, 
-                amount: amount, 
-                createdAt: new Date()
-               });
+        await BalanceTransaction.create({
+            user: userId,
+            type: "withdraw",
+            state: "created",
+            providerId: batchId, 
+            amount: amount, 
+            createdAt: new Date()
+        });
 
-            const newWithdraw = new Withdraw({
-                user: userId,
-                amount,
-                address,
-                currency: targetCurrency,
-                batch_id: batchId,
-                status: "CREATED"
-            });
-            await newWithdraw.save();
-            
-            attemptAutomaticVerification(batchId);
+        const newWithdraw = new Withdraw({
+            user: userId,
+            amount,
+            address,
+            currency: targetCurrency,
+            batch_id: batchId,
+            status: "CREATED"
+        });
+        await newWithdraw.save();
+        
+        attemptAutomaticVerification(batchId);
 
-            console.log("Payout initiated, awaiting email verification:", batchId);
-            
-            res.json({ 
-                message: "Withdrawal initiated. Verification is being processed automatically.", 
-                data: response.data 
-            });
-            console.log("Payout success:",response.data);
-    
+        res.json({ 
+            message: "Withdrawal initiated.", 
+            data: response.data 
+        });
 
-        } catch (error) {
-          //  Revert
-            if (user) {
-                user.wallet.sc += amount;
-                await user.save();
-                logger.error("Saldo revertido al usuario por error en API");
-            }
+    } catch (error) {
+        // --- REVERSIÓN DE SALDO CORREGIDA ---
+        console.error("Error en Payout:", error.response?.data || error.message);
 
-            const errorData = error.response?.data || error.message;
-            console.error("Error en Payout:", errorData);
-            res.status(500).json({ error: "Failed to process withdrawal", details: errorData });
-       }
-    });
+        if (userModel) {
+            userModel.wallet.sc += amount;
+            await userModel.save();
+            console.log("--- SALDO REVERTIDO AL USUARIO ---");
+        }
+
+        res.status(500).json({ 
+            error: "Failed to process withdrawal", 
+            details: error.response?.data || error.message 
+        });
+    }
+});
 
    router.post('/verify-payout', async (req, res) => {
 
@@ -223,6 +231,21 @@ module.exports = () => {
             }
         }, 30000); 
     }
+
+   async function getNowPaymentsMinAmount(coin) {
+    try {
+        const response = await axios.get(
+            `${API_URL}/payout-withdrawal/min-amount/${coin}`,
+            {
+                headers: { 'x-api-key': process.env.NOWPAYMENTS_API_KEY }
+            }
+        );
+        return response.data.result; // Retorna el número (ej: 12.5)
+    } catch (error) {
+        console.error("Error consultando monto mínimo:", error.message);
+        return null; // Si falla, podemos manejarlo con un valor por defecto
+    }
+}
 
     return router;
 };

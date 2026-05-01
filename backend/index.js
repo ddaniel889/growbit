@@ -21,7 +21,7 @@ const io = socket(server, {
   transports: ["websocket"],
   cors: {
     origin: (
-      process.env.SERVER_FRONTEND_URL || "https://99wiwi-gilt.vercel.app"
+      process.env.SERVER_FRONTEND_URL || "https://growbit-ieec.onrender.com"
     )
       .split(",")
       // Trim spaces and remove trailing slash
@@ -86,7 +86,7 @@ axios.interceptors.response.use(
     cors({
       origin: (
         process.env.SERVER_FRONTEND_URL ||
-        "https://99wiwi.net,https://99wiwi-gilt.vercel.app"
+        "https://growbit-ieec.onrender.com"
       )
         .split(",")
         // Trim spaces and remove trailing slash

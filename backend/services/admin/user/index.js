@@ -70,7 +70,7 @@ const adminGetUserListSocket = async (io, socket, user, data, callback) => {
         .limit(12)
         .skip(offset)
         .select(
-          "local.email local.emailVerified  whitelist username avatar balance xp vault rank stats leaderboard limits ips mute ban updatedAt createdAt",
+          "local.email local.emailVerified  whitelist username avatar balance wallet xp vault rank stats leaderboard limits ips mute ban updatedAt createdAt",
         )
         .populate("affiliates.referrer", "username")
         .lean(),

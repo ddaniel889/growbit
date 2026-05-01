@@ -40,7 +40,10 @@ const slideCheckSendBetData = (data) => {
 };
 
 const slideCheckSendBetUser = (data, user, slideBets) => {
-  if (data.amount > user.balance) {
+  const hasEnoughBalance = user.balance >= data.amount;
+  const hasEnoughSC = user.wallet && user.wallet.sc >= data.amount;
+  const hasEnoughGC = user.wallet && user.wallet.gc >= data.amount;
+  if (!hasEnoughSC) {
     throw new Error("You don’t have enough balance for this action.");
   } else if (
     slideBets.filter(

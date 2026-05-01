@@ -61,7 +61,7 @@ module.exports = (io) => {
         $set: { updatedAt: new Date() }      
     },
     { new: true }
-)
+    ).lean();
 
     if (!updatedUser) return res.status(404).send('User not found');
 

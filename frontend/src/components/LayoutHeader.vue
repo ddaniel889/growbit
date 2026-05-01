@@ -246,18 +246,22 @@ export default {
 
 balances() {
   const wallet = this.authUser?.user?.wallet || { sc: 0, gc: 0 };
-  
+
   return [
+    { currency: "SC", balance: wallet.sc || 0 },
+    { currency: "GC", balance: wallet.gc || 0 }
+  ];
+  
+  /*return [
     {
       currency: "SC",
-      // Quitamos el toLocaleString de aquí para que la comparación sea numérica y reactiva
       balance: wallet.sc 
     },
     {
       currency: "GC",
       balance: wallet.gc
     }
-  ];
+  ];*/
 },
  // ACTUALIZA EL COMPUTED balance() PARA EL FORMATO:
 balance() {
@@ -364,17 +368,24 @@ balance() {
 
           // Escuchamos el evento de éxito
           cashierSocket.on("PAYMENT_SUCCESS", (data) => {
-            if (data.user) {
+            if (data && data.user) {
               // Actualizamos el usuario con los nuevos balances wallet.sc y wallet.gc
+              const sanitizedUser = {
+          ...data.user,
+          wallet: {
+            sc: Number(data.user.wallet.sc),
+            gc: Number(data.user.wallet.gc)
+          }
+        }
               this.$store.commit("auth_update_user", data.user);
               //this.$toast.success("Balance updated!");
             this.notificationShow({ 
-            type: "success", 
-            message: "Balance updated!" 
-      })
+               type: "success", 
+               message: "Balance updated!" 
+            })
               this.$store.dispatch("notificationShow", {
                 type: "success",
-                message: "¡Depósito confirmado! Tu saldo ha sido actualizado."
+                message: "Deposit confirmed! Your balance has been updated."
               });
             }
           });

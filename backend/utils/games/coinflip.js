@@ -49,7 +49,10 @@ const coinflipValidateCreateReq = (data) => {
 };
 
 const coinflipCheckSendCreateUser = (data, user, userGames) => {
-  if (user.balance < data.amount) {
+  const hasEnoughBalance = user.balance >= data.amount;
+  const hasEnoughSC = user.wallet && user.wallet.sc >= data.amount;
+  const hasEnoughGC = user.wallet && user.wallet.gc >= data.amount;
+  if (!hasEnoughSC) {
     throw new Error("You don’t have enough balance.");
   } else if (userGames.length >= 6) {
     throw new Error(
@@ -113,7 +116,11 @@ const coinflipCheckSendJoinGame = (user, coinflipGame, coinflipBlockGame) => {
 };
 
 const coinflipCheckSendJoinUser = (user, coinflipGame) => {
-  if (user.balance < coinflipGame.amount) {
+  const hasEnoughBalance = user.balance >= coinflipGame.amount;
+  const hasEnoughSC = user.wallet && user.wallet.sc >= coinflipGame.amount;
+  const hasEnoughGC = user.wallet && user.wallet.gc >= coinflipGame.amount;
+
+  if (!hasEnoughSC) {
     throw new Error("You don’t have enough balance for this action.");
   }
 };
