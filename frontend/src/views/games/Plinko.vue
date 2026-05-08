@@ -76,6 +76,7 @@
                 :fullwidth="true"
                 v-if="plinkoMode !== 'auto' || plinkoAutoActive === false"
                 :click="plinkoCreateButton"
+                :disabled="!hasBalance"
                 class="button-create"
               >
                 {{ plinkoMode === "auto" ? "Start Autobet" : "Place Bet" }}
@@ -266,6 +267,10 @@ export default {
       "plinkoHistory",
       "gameConfig",
     ]),
+    hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    },
     maxBet() {
       return (
         this.gameConfig.maxWin /
@@ -622,6 +627,12 @@ export default {
   padding: 8px 4px 4px 4px;
   border-radius: 8px;
   background: #090c1d;
+
+  .button-create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
   @media screen and (max-width: 991px) {
     grid-row-start: 1;
     margin: 0;

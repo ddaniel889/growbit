@@ -81,7 +81,7 @@
               :disabled="
                 socketSendLoading !== null ||
                 animationInProgress ||
-                (mode === 'auto' && !this.towersSelected.length)
+                (mode === 'auto' && !this.towersSelected.length) || !hasBalance
               "
               class="button-create"
             >
@@ -390,7 +390,10 @@ export default {
       "selectedCurrency",
       "towersSelected",
     ]),
-
+    hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    },
     nextProfit() {
       return (
         (this.towersGame?.amount || 0) *
@@ -533,6 +536,7 @@ export default {
 
     margin-top: 10px;
   }
+
 
   .profit {
     margin-left: auto;
@@ -879,6 +883,13 @@ export default {
   padding: 8px 4px 4px 4px;
   border-radius: 8px;
   background: #090c1d;
+  
+  .button-create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+  }
+
   @media screen and (max-width: 991px) {
     margin-top: 0;
     margin-bottom: 10px;

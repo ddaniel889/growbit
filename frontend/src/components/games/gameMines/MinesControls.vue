@@ -124,7 +124,7 @@
           "
           v-on:click="minesBetButton()"
           v-bind:disabled="
-            socketSendLoading !== null || autobetAnimationInProgress
+            socketSendLoading !== null || autobetAnimationInProgress || !hasBalance
           "
           class="button-create"
         >
@@ -454,6 +454,10 @@ export default {
       "minesCount",
       "minesGridSize",
     ]),
+    hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    },
     maxBet() {
       return this.gameConfig.minesMaxBet;
     },

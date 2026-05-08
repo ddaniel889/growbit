@@ -126,46 +126,46 @@
           <div>Daily</div>
           <div class="total-wager">
             <span>{{
-              getDisplayCurrencyAmountFormatted(
+              getSCAmountFormatted(
                 authUser.user.rakeback.daily.earned,
               )
             }}</span>
-            <Currency></Currency>
+            <Currency currency="sc"></Currency>
           </div>
         </div>
         <div class="stat">
           <div>Monthly</div>
           <div class="total-wager">
             <span>{{
-              getDisplayCurrencyAmountFormatted(
+              getSCAmountFormatted(
                 authUser.user.rakeback.monthly.earned,
               )
             }}</span>
-            <Currency></Currency>
+            <Currency currency="sc"></Currency>
           </div>
         </div>
         <div class="stat">
           <div>Weekly</div>
           <div class="total-wager">
             <span>{{
-              getDisplayCurrencyAmountFormatted(
+              getSCAmountFormatted(
                 authUser.user.rakeback.weekly.earned,
               )
             }}</span>
-            <Currency></Currency>
+            <Currency currency="sc"></Currency>
           </div>
         </div>
         <div class="stat">
           <div>Total</div>
           <div class="total-wager">
             <span>{{
-              getDisplayCurrencyAmountFormatted(
+              getSCAmountFormatted(
                 authUser.user.rakeback.daily.earned +
                   authUser.user.rakeback.weekly.earned +
                   authUser.user.rakeback.monthly.earned,
               )
             }}</span>
-            <Currency></Currency>
+            <Currency currency="sc"></Currency>
           </div>
         </div>
       </div>
@@ -186,7 +186,7 @@ import RaceTimer from "@/components/RaceTimer.vue";
 import AppButton from "@/components/AppButton.vue";
 export default {
   mixins: [currencyExchangeRatesMixin],
-  components: { Currency, AppButton, Rakeback, Keys, CopyIcon, RaceTimer },
+  components: { Currency, AppButton, Rakeback, Keys, CopyIcon, RaceTimer },//
   data() {
     return {
       vipRanks: getLevels(),
@@ -277,6 +277,16 @@ export default {
     openDaily() {
       this.$router.push("/cases/daily");
     },
+    getSCAmountFormatted(amount) {
+    // Obtenemos la tasa de SC específicamente, independientemente de la global
+    const scRate = this.fiatRates?.data?.['sc'] || 1;
+    const value = amount * scRate;
+    
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  },
     getLevelClass(name) {
       return {
         "bg-bronze": name === "Bronze",

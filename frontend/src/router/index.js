@@ -32,6 +32,7 @@ import BattlesCreate from "../views/games/battles/BattlesCreate";
 
 const Terms = () => import("../views/Terms");
 const Rewards = () => import("../views/Rewards");
+const Vip = () => import("../views/VipClub");
 
 const Privacy = () => import("../views/Privacy");
 
@@ -327,6 +328,11 @@ const routes = [
       auth: true,
       //  admin: true,
     },
+  },
+  {
+    path: "/vip",
+    name: "Vip",
+    component: Vip,
   },
   {
     path: "/faq",

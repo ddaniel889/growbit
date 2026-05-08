@@ -116,15 +116,17 @@ export default {
   watch: {
     crashGame: {
       handler(data, oldData) {
+        if (!data) return;
+
         if (data.state === "created") {
           CrashGraph.Engine.multi = 1.0001;
           CrashGraph.Engine.gameState = "STARTING";
           cancelAnimationFrame(this.crashRunRepeater);
           this.crashStartTimer();
         } else if (data.state === "rolling") {
-          CrashGraph.Engine.multi = 1.0001;
           CrashGraph.Engine.gameState = "IN_PROGRESS";
-
+          CrashGraph.Engine.multi = 1.0001;
+       
           this.crashMultiplier = 1.0001;
           this.crashStartMutiplier();
         } else if (data.state === "completed") {
@@ -146,14 +148,16 @@ export default {
 
     CrashGraph.Engine.multi = 1;
 
+   if (this.crashGame) {
     if (this.crashGame.state === "created") {
       CrashGraph.Engine.gameState = "STARTING";
       this.crashStartTimer();
     } else if (this.crashGame.state === "rolling") {
       CrashGraph.Engine.gameState = "IN_PROGRESS";
       this.crashStartMutiplier();
-    } else {
-      this.crashText = "PENDING...";
+    }
+  } else {
+      this.crashText = "WAITING FOR NETWORK...";
     }
   },
   destroyed() {

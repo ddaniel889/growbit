@@ -14,7 +14,7 @@
       />
       <img
         :src="`/img/currencies/${selectedCurrency}.${
-          selectedCurrency === 'DLS' ? 'png' : 'svg'
+          selectedCurrency === 'sc' ? 'png' : 'png'
         }`"
         alt="icon"
       />

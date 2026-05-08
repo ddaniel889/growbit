@@ -131,7 +131,7 @@ export default {
             {
               name: "Vip Club",
               icon: RewardsIcon,
-              url: "/rewards",
+              url: "/vip",
             }
           ],
         },

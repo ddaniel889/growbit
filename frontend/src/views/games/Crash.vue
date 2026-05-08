@@ -2,11 +2,8 @@
   <div class="crash">
     <div class="crash-container">
       <transition name="fade" mode="out-in">
-        <div
-          v-if="socketCrash.connected === false"
-          class="container-loading"
-          key="loading"
-        >
+      <div v-if="false" class="container-loading" key="loading">
+         <!--div v-if="!isSocketReady" class="container-loading" key="loading"-->
           <LoadingAnimation></LoadingAnimation>
         </div>
         <div v-else class="container-data" key="data">
@@ -34,6 +31,11 @@ import LoadingAnimation from "@/components/LoadingAnimation.vue";
 
 export default {
   name: "Crash",
+  data() {
+    return {
+      isSocketReady: false 
+    }
+  },
   metaInfo: {
     title: "Crash ",
   },
@@ -50,8 +52,20 @@ export default {
   computed: {
     ...mapGetters(["socketCrash"]),
   },
-  created() {
+  mounted() {
+    console.log("Estado del socket al montar:", this.socketCrash);
     this.socketConnectCrash();
+    console.log("Estado del socket tras intentar conectar:", this.socketCrash.connected);
+  // Escuchamos el evento de conexión directamente del objeto socket
+    this.socketCrash.on("connect", () => {
+      console.log("¡Bingo! Socket conectado detectado en el componente");
+      this.isSocketReady = true;
+    });
+
+    // Si ya estaba conectado por alguna razón
+    if (this.socketCrash.connected) {
+      this.isSocketReady = true;
+    }
   },
   beforeRouteLeave(to, from, next) {
     this.socketDisconnectCrash();

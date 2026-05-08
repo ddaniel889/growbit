@@ -65,6 +65,7 @@
           <div class="controls-bet">
             <app-button
               :fullwidth="true"
+              :disabled="!hasBalance"
               v-if="mode !== 'auto' || autoActive === false"
               :click="playButton"
               class="button-create"
@@ -237,7 +238,11 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["generalSettings", "authUser", "gameConfig"]),
+    ...mapGetters(["generalSettings", "authUser", "gameConfig","selectedCurrency"]),
+      hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    },
     multiplier() {
       //console.log("chance " + getDiceChance(this.target, this.target2, this.targetMode));
       // return (
@@ -269,6 +274,12 @@ export default {
 
 <style scoped lang="scss">
 .dice {
+
+ .button-create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
   max-width: 1100px;
   width: 100%;
   padding: 30px 0 0 0;

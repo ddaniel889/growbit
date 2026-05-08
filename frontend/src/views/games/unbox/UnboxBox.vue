@@ -19,7 +19,7 @@
             </p>
             <img
               :src="`/img/currencies/${selectedCurrency}.${
-                selectedCurrency === 'DLS' ? 'png' : 'svg'
+                selectedCurrency === 'sc' ? 'png' : 'png'
               }`"
               alt=""
             />
@@ -127,7 +127,7 @@
           <p>{{ getBalanceInSelectedCurrency(unboxBoxData.box.casePrice) }}</p>
           <img
             :src="`/img/currencies/${selectedCurrency}.${
-              selectedCurrency === 'DLS' ? 'png' : 'svg'
+              selectedCurrency === 'sc' ? 'png' : 'png'
             }`"
             alt=""
           />
@@ -212,12 +212,22 @@ export default {
         regex.test(navigator.userAgent) || window.innerWidth < 991;
     },
     getBalanceInSelectedCurrency(balance) {
-      return (
-        (this.fiatRates?.data?.[this.selectedCurrency] || 1) * balance
-      ).toLocaleString("en-US", {
+      // 1. Validamos que existan las tasas y la moneda seleccionada
+       if (!this.fiatRates || !this.fiatRates.data || !this.selectedCurrency) {
+        return "0.00";
+       }
+
+  // 2. Obtenemos la tasa (asegurándonos de que coincidan mayúsculas/minúsculas)
+      const rate = this.fiatRates.data[this.selectedCurrency] || 
+               this.fiatRates.data[this.selectedCurrency.toLowerCase()];
+
+  // 3. Si la tasa no existe, devolvemos 0.00 para evitar el NaN
+      if (rate === undefined) return "0.00";
+
+      return (rate * balance).toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+     });
     },
     unlock() {
       this.unlockWithTheKey({

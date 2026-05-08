@@ -1,6 +1,6 @@
 import socketIo from "socket.io-client";
 const SOCKET_URL =
-  process.env.VUE_APP_SOCKET_URL || "https://growbit-backend.onrender.com";
+  process.env.VUE_APP_SOCKET_URL || "https://growbit-backend-32gg.onrender.com";
 
 const state = {
   socketSendLoading: null,
@@ -15,13 +15,15 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
-    reconnectionDelay: 5000,
-    transports: ["websocket"],
+    forceNew: true,
+    timeout: 10000, // Bajamos de 5000 a 2000 para que sea más rápido
+    transports: ["websocket"], // Añadimos polling primero
   }),
   socketMines: socketIo(SOCKET_URL + "/mines", {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
@@ -29,6 +31,7 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
@@ -36,6 +39,7 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
@@ -43,6 +47,7 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
@@ -50,6 +55,7 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
@@ -58,6 +64,7 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
@@ -87,6 +94,7 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
@@ -94,9 +102,12 @@ const state = {
     auth: {},
     autoConnect: false,
     reconnection: true,
+    forceNew: true,
     reconnectionDelay: 5000,
     transports: ["websocket"],
   }),
+
+ 
 };
 
 const getters = {
@@ -225,6 +236,15 @@ const actions = {
     getters.socketCrash.disconnect();
   },
   socketListenCrash({ getters, dispatch }) {
+    getters.socketCrash.on("connect", () => {
+      console.log("%c[SOCKET CRASH]: ¡Conectado con éxito!", "color: #00ff00; font-weight: bold;");
+    });
+
+    // LOG DE ERROR DE CONEXIÓN (Esto te dirá por qué falla)
+    getters.socketCrash.on("connect_error", (err) => {
+      console.error("%c[SOCKET CRASH ERROR]:", "color: #ff0000; font-weight: bold;", err.message);
+      console.log("Detalle del error:", err);
+    });
     getters.socketCrash.on("init", (data) => {
       dispatch("crashSocketInit", data);
     });

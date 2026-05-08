@@ -1,9 +1,7 @@
 <template>
   <img
     class="currency"
-    :src="`/img/currencies/${selectedCurrency}.${
-      selectedCurrency === 'DLS' ? 'png' : 'png'
-    }`"
+    :src="`/img/currencies/${displayCurrency}.png`"
     alt="icon"
   />
 </template>
@@ -13,6 +11,13 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "Currency",
+  props: {
+    // Agregamos este prop
+    currency: {
+      type: String,
+      default: null
+    }
+  },
   components: {},
   data() {
     return {};
@@ -20,6 +25,10 @@ export default {
   methods: {},
   computed: {
     ...mapGetters(["generalSettings", "authUser", "selectedCurrency"]),
+    displayCurrency() {
+      // Prioridad: 1. Prop pasado al componente, 2. Selección global
+      return this.currency || this.selectedCurrency;
+    }
   },
   created() {},
 };

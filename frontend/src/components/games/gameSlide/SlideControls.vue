@@ -39,7 +39,7 @@
         <button
           v-on:click="slideBetButton('red')"
           class="button-bet"
-          :disabled="socketSendLoading !== null || !betting"
+          :disabled="socketSendLoading !== null || !betting || !hasBalance"
         >
           <div class="button-info">
             <img src="../../../assets/images/slide/red_new.png" />
@@ -52,7 +52,7 @@
         <button
           v-on:click="slideBetButton('purple')"
           class="button-bet"
-          :disabled="socketSendLoading !== null || !betting"
+          :disabled="socketSendLoading !== null || !betting || !hasBalance"
         >
           <div class="button-info">
             <img src="../../../assets/images/slide/purple_new.png" />
@@ -65,7 +65,7 @@
         <button
           v-on:click="slideBetButton('yellow')"
           class="button-bet"
-          :disabled="socketSendLoading !== null || !betting"
+          :disabled="socketSendLoading !== null || !betting || !hasBalance"
         >
           <div class="button-info">
             <img src="../../../assets/images/slide/yellow_new.png" />
@@ -83,7 +83,7 @@ import { mapGetters, mapActions } from "vuex";
 import Currency from "@/components/Currency.vue";
 import { currencyExchangeRatesMixin } from "@/currencyExchangeMixin";
 
-export default {
+export default {//
   name: "SlideControls",
   components: { Currency },
   mixins: [currencyExchangeRatesMixin],
@@ -179,6 +179,10 @@ export default {
   },
   computed: {
     ...mapGetters(["socketSendLoading", "authUser", "slideData", "gameConfig"]),
+    hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    },
     betting() {
       if (!this.slideData || !this.slideData.game) return false;
       return this.slideData.game.state === "created";

@@ -35,14 +35,15 @@
       <button
         v-on:click="unboxBetButton()"
         class="button-bet"
-        v-bind:disabled="socketSendLoading !== null || unboxRunning === true"
+        v-bind:disabled="socketSendLoading !== null || unboxRunning === true || !hasBalance"
       >
         <p>OPEN FOR</p>
         <img
           :src="`/img/currencies/${selectedCurrency}.${
-            selectedCurrency === 'DLS' ? 'png' : 'svg'
+            selectedCurrency === 'sc' ? 'png' : 'png'
           }`"
           alt=""
+          class="coin"
         />
         {{
           getBalanceInSelectedCurrency(unboxBoxData.box.casePrice * unboxCount)
@@ -51,7 +52,7 @@
       <button
         v-on:click="unboxDemoButton()"
         class="button-demo"
-        v-bind:disabled="socketSendLoading !== null || unboxRunning === true"
+        v-bind:disabled="socketSendLoading !== null || unboxRunning === true || !hasBalance"
       >
         DEMO SPIN
       </button>
@@ -77,14 +78,24 @@ export default {
       "unboxSetGames",
       "unboxSendBetSocket",
     ]),
-    getBalanceInSelectedCurrency(balance) {
-      return (
-        this.fiatRates.data[this.selectedCurrency] * balance
-      ).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    },
+   getBalanceInSelectedCurrency(balance) {
+  // 1. Validamos que existan las tasas y la moneda seleccionada
+  if (!this.fiatRates || !this.fiatRates.data || !this.selectedCurrency) {
+    return "0.00";
+  }
+
+  // 2. Obtenemos la tasa (asegurándonos de que coincidan mayúsculas/minúsculas)
+   const rate = this.fiatRates.data[this.selectedCurrency] || 
+               this.fiatRates.data[this.selectedCurrency.toLowerCase()];
+
+  // 3. Si la tasa no existe, devolvemos 0.00 para evitar el NaN
+   if (rate === undefined) return "0.00";
+
+   return (rate * balance).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+   });
+  },
     unboxFormatValue(value) {
       return parseFloat(Math.floor(value / 10) / 100)
         .toFixed(2)
@@ -138,11 +149,19 @@ export default {
       "unboxBoxData",
       "selectedCurrency",
     ]),
+    hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    }
   },
 };
 </script>
 
 <style scoped lang="scss">
+img.coin{
+  width: 20px;
+  height: 20px;
+}
 .price {
   display: flex;
   gap: 10px;
@@ -236,6 +255,13 @@ export default {
 }
 
 .unbox-controls .controls-bet button.button-bet {
+
+   :disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+   filter: grayscale(1);
+  }
+
   width: 240px;
   height: 45px;
   display: flex;
@@ -255,6 +281,13 @@ export default {
 }
 
 .unbox-controls .controls-bet button.button-demo {
+
+  :disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+   filter: grayscale(1);
+  }
+
   width: 240px;
   height: 45px;
   display: flex;

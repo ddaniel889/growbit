@@ -38,14 +38,14 @@
         </button>
       </div>
       <div class="create">
-        <AppButton :click="() => coinflipCreateButton()">Create Game</AppButton>
+        <AppButton :click="() => coinflipCreateButton()" :disabled="!hasBalance">Create Game</AppButton>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";//
 import AppButton from "@/components/AppButton.vue";
 import Currency from "@/components/Currency.vue";
 import { currencyExchangeRatesMixin } from "@/currencyExchangeMixin";
@@ -129,6 +129,10 @@ export default {
   },
   computed: {
     ...mapGetters(["socketSendLoading", "authUser"]),
+    hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    }
   },
 };
 </script>
@@ -144,6 +148,11 @@ export default {
 
   .create {
     margin-left: auto;
+  .button-create:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+   filter: grayscale(1);
+  }
     @media screen and (max-width: 991px) {
       margin-top: 10px;
       margin-left: 0;

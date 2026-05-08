@@ -7,7 +7,7 @@
     </template>
     <template v-if="!homeGamesLoading && originals" class="game-list">
       <div class="category">
-        <div class="name">99wiwi Originals</div>
+        <div class="name">99wiwi OriginalsT</div>
 
         <div class="games-arrows">
           <router-link

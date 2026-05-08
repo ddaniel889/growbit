@@ -50,7 +50,7 @@
               :fullwidth="true"
               v-if="mode !== 'auto' || autoActive === false"
               :click="playButton"
-              :disabled="animationInProgress"
+              :disabled="animationInProgress || !hasBalance"
               class="button-create"
             >
               {{ mode === "auto" ? "Start Autobet" : "Place Bet" }}
@@ -304,6 +304,10 @@ export default {
   },
   computed: {
     ...mapGetters(["generalSettings", "authUser", "gameConfig"]),
+    hasBalance() {
+    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
+    return currentBalance > 0;
+    },
     multiplier() {
       return 1;
     },
@@ -330,6 +334,8 @@ export default {
   width: 100%;
   padding: 30px 0 0 0;
   margin-inline: auto;
+
+ 
   .footer {
     max-width: 1100px;
     margin-inline: auto;
@@ -639,6 +645,12 @@ export default {
 }
 
 .controls-bet {
+
+  .button-create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+  }
   margin-top: 20px;
   width: 100%;
   padding: 8px 4px 4px 4px;
