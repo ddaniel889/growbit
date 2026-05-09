@@ -7,6 +7,9 @@
             <router-link to="/" custom v-slot="{ navigate }">
                 <div @click="navigate" class="logo-wrapper">
                   <img class="logo-large" src="/img/growbit_text.svg" />
+                  <!-- Logo para Móvil (Agregado) -->
+                  <img class="logo-small" src="/img/growbit_text.svg" />
+
                 </div>
             </router-link>
             <div class="switcher"></div>
@@ -633,7 +636,12 @@ header {
   .logo-large {
     height: 34px;
     width: auto;
-    object-fit: contain;
+    //object-fit: contain;
+    display: block;
+
+    @media (max-width: 991px) {
+      display: none; // Se oculta en móvil
+    }
 
     @media (min-width: 1400px) {
       height: 38px;
@@ -663,7 +671,10 @@ header {
 
   @media (max-width: 480px) {
     .logo-small {
+      display: block;
       height: 32px;
+      height: 30px;
+      width: auto;
     }
   }
 
@@ -819,7 +830,12 @@ header {
     .header-container {
       display: flex;
       height: 100%;
-      padding: 0 20px;
+     // padding: 0 20px;
+      display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px; /* Ajusta según el diseño */
+  background-color: #0b0e11; /* Color oscuro del fondo */
 
       .inner-container {
         display: flex;
@@ -937,10 +953,17 @@ header {
 
       &.auth-btns {
         gap: 12px;
-        padding-right: 10px;
+        //padding-right: 10px;
+        margin-left: auto;
+        display: flex !important;
         
         @media (max-width: 991px) {
-          display: none;
+           padding-right: 0;
+           // Si los botones son muy grandes para móvil, puedes ajustar el padding aquí
+           .login-btn-link {
+             font-size: 0.8rem;
+             padding: 0 5px;
+           }
         }
 
         .login-btn-link {

@@ -25,6 +25,7 @@
             <layout-header v-if="showHeader"></layout-header>
             <div class="pageContent">
               <router-view :key="$route.fullPath"></router-view>
+              <LayoutBanner v-if="showBanner"></LayoutBanner>
               <div class="live-feed" v-if="showBets">
                 <Bets />
               </div>
@@ -49,7 +50,8 @@ import AppMaintenance from "@/components/AppMaintenance";
 import Modals from "@/components/modals/Modals";
 import Notifications from "@/components/notifications/Notifications";
 import LayoutHeader from "@/components/LayoutHeader.vue";
-import LayoutFooter from "@/components/LayoutFooter.vue";
+import LayoutFooter from "@/components/LayoutFooter.vue"; 
+import LayoutBanner from "@/components/LayoutBanner.vue";
 import LayoutSidebar from "@/components/sidebar/LayoutSidebar.vue";
 import Chat from "@/components/chat/Chat.vue";
 import BottomNav from "@/components/BottomNav.vue";
@@ -67,6 +69,7 @@ export default {
     Modals,
     Notifications,
     BottomNav,
+    LayoutBanner
   },
   methods: {
     ...mapActions([
@@ -86,6 +89,9 @@ export default {
       "authToken",
       "authUser",
     ]),
+    showBanner() {
+      return !this.$route.path.startsWith("/admin");
+    },
     showFooter() {
       return !this.$route.path.startsWith("/admin");
     },

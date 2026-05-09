@@ -1,11 +1,9 @@
 <template>
   <div class="modal-login">
     <div class="left-banner">
-      <div class="banner-content">
-        <h2>WELCOME TO</h2>
-        <img src="/img/preloader-logo.svg" alt="Logo" class="banner-logo" />
-        <div class="logo-text">99wiwi</div>
-        <h3>START YOUR GAME<br />JOURNEY NOW</h3>
+     <div class="banner-content">
+        <!-- Solo dejamos la imagen del logo -->
+        <img src="/img/preloader-logo.png" alt="Logo" class="banner-logo" />
       </div>
     </div>
     <div class="right-content">
@@ -120,12 +118,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 30px;
+
+  padding: 0;
 
   /* Overlay gradient to ensure text readability */
   &::before {
-    content: "";
+   content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -133,8 +131,8 @@ export default {
     bottom: 0;
     background: linear-gradient(
       180deg,
-      rgba(30, 32, 74, 0.8) 0%,
-      rgba(13, 16, 38, 0.95) 100%
+      rgba(30, 32, 74, 0.4) 0%, 
+      rgba(13, 16, 38, 0.7) 100%
     );
     z-index: 1;
   }
@@ -146,7 +144,11 @@ export default {
   .banner-content {
     position: relative;
     z-index: 2;
-    color: #fff;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     h2 {
       font-size: 1.1rem;
@@ -158,11 +160,14 @@ export default {
     }
 
     .banner-logo {
-      height: 80px;
-      max-width: 100%;
-      object-fit: contain;
-      margin-bottom: 10px;
-      filter: drop-shadow(0 0 15px rgba(0, 198, 255, 0.3));
+    
+      width: 100%;
+      height: 100%;
+      /* 'cover' hará que la imagen cubra todo el espacio sin deformarse, 
+         'contain' hará que se vea completa ocupando el máximo posible */
+      object-fit: contain; 
+      padding: 20px; 
+      filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.4));
 
       @media screen and (max-width: 1200px) {
         height: 60px;
