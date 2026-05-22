@@ -43,35 +43,41 @@ const setAffiliateCode = async (io, socket, user, data, callback) => {
   }
 };
 
-const claimAffiliateEarnings = async (io, socket, user, data, callback) => {
+const claimAffiliateEarnings = async (io, socket, user, data, callback) => {//
   try {
     // Check if user has enough available affiliate earnings
     generalCheckSendAffiliateClaimEarningsUser(user);
 
     const factor = getAffiliateLevel(user).commission;
+    const earningsInSC = user.affiliates.available * factor;
     // Update claiming user and create balance transaction in database
     const dataDatabase = await Promise.all([
       User.findByIdAndUpdate(
         user._id,
         {
           $inc: {
-            balance: user.affiliates.available * factor,
-            "affiliates.totalClaimed": user.affiliates.available * factor,
+            "wallet.sc": earningsInSC, //balance: user.affiliates.available * factor
+            "affiliates.totalClaimed": earningsInSC, //user.affiliates.available * factor
           },
           "affiliates.available": 0,
           "affiliates.lastClaimed": new Date(),
         },
         { new: true },
       ).select(
-        "balance xp stats rakeback affiliates mute ban verifiedAt updatedAt",
+        "balance wallet xp stats rakeback affiliates mute ban verifiedAt updatedAt",
       ),
       BalanceTransaction.create({
-        amount: user.affiliates.available * factor,
+        amount: earningsInSC,  //user.affiliates.available * factor,
         type: "affiliateEarningClaim",
+        currency: "sc",
         user: user._id,
         state: "completed",
       }),
     ]);
+
+    io.of("/general")
+      .to(user._id.toString())
+      .emit("user", { user: dataDatabase[0] });
 
     callback({ success: true, user: dataDatabase[0] });
 
@@ -109,10 +115,10 @@ function getAffiliateLevel(user) {
   return { commission: COMMISSIONS[level - 1], level };
 }
 
-async function getAffiliateList(userId) {
+async function getAffiliateList(userId) { //getAffiliateList
   return await User.find({ "affiliates.referrer": userId })
     .select("username affiliates stats createdAt")
-    .sort({ "affiliates.generated": -1 })
+    .sort({ createdAt: -1 }) //.sort({ "affiliates.generated": -1 })
     .lean()
     .limit(10)
     .exec();

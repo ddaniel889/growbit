@@ -21,7 +21,7 @@
                 <span>{{
                   Math.round(getDisplayCurrencyAmount(stats.wager))
                 }}</span>
-                <Currency />
+                <Currency currency="sc" />
               </div>
             </div>
             <div class="stat-item">
@@ -30,7 +30,7 @@
                 <span>{{
                   Math.round(getDisplayCurrencyAmount(stats.won))
                 }}</span>
-                <Currency />
+                <Currency currency="sc"/>
               </div>
             </div>
             <div
@@ -42,7 +42,7 @@
                 <span>{{
                   Math.round(getDisplayCurrencyAmount(stats.wager - stats.won))
                 }}</span>
-                <Currency />
+                <Currency currency="sc"/>
               </div>
             </div>
           </div>
@@ -55,7 +55,7 @@
                 <span>{{
                   Math.round(getDisplayCurrencyAmount(stats.deposit))
                 }}</span>
-                <Currency />
+                <Currency currency="sc"/>
               </div>
             </div>
             <div class="stat-item">
@@ -64,7 +64,7 @@
                 <span>{{
                   Math.round(getDisplayCurrencyAmount(stats.withdraw))
                 }}</span>
-                <Currency />
+                <Currency currency="sc"/>
               </div>
             </div>
             <div
@@ -78,7 +78,7 @@
                     getDisplayCurrencyAmount(stats.deposit - stats.withdraw),
                   )
                 }}</span>
-                <Currency />
+                <Currency currency="sc"/>
               </div>
             </div>
           </div>
@@ -119,7 +119,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { currencyExchangeRatesMixin } from "@/currencyExchangeMixin";
+import { currencyExchangeRatesMixin } from "@/currencyExchangeMixin";//
 import Currency from "@/components/Currency.vue";
 
 export default {

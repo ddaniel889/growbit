@@ -189,23 +189,24 @@ const raceComplete = async (leaderboard) => {
             users[i]._id,
             {
               $inc: {
-                balance: endingRace.winners[i].prize,
+                "wallet.sc": endingRace.winners[i].prize,   //balance: endingRace.winners[i].prize, 
               },
               updatedAt: new Date().getTime(),
             },
             { new: true }
           )
-            .select("balance updatedAt")
+            .select("balance wallet updatedAt")
             .lean(),
           BalanceTransaction.create({
             amount: endingRace.winners[i].prize,
+            currency: "sc",
             type: "racePayout",
             user: users[i]._id,
             state: "completed",
           }),
           createNotification(
             users[i]._id,
-            `You have won ${endingRace.winners[i].prize?.toFixed(2)} DLS`,
+           `You have won ${endingRace.winners[i].prize?.toFixed(2)} SC in the Weekly Race!`,
             ioRef,
             "race"
           )

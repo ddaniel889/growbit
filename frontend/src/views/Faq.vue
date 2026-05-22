@@ -1,6 +1,6 @@
 <template>
   <div class="faq">
-    <div class="faq-header">99wiwi Frequently Asked Questions (FAQ)</div>
+    <div class="faq-header">betsweeps Frequently Asked Questions (FAQ)</div>
     <div class="faq-content">
       <section v-for="s of questions">
         <p>
@@ -48,18 +48,18 @@ export default {
           sectionName: "General Information",
           questions: [
             {
-              Q: "What is 99wiwi.net?",
-              A: " 99wiwi.net is a sweepstakes and entertainment platform offering games and contests for users to enjoy. The platform is governed by a provably fair system to ensure transparency and fairness.",
+              Q: "What is betsweeps?",
+              A: " betsweeps is a sweepstakes and entertainment platform offering games and contests for users to enjoy. The platform is governed by a provably fair system to ensure transparency and fairness.",
               open: false,
             },
             {
-              Q: "Who can use 99wiwi.net?",
-              A: "99wiwi.net is available to individuals aged 18 or older who reside in eligible jurisdictions. Users from Nevada and Washington, as well as other restricted areas, are prohibited from accessing the platform. Participants must comply with all local laws and regulations in their jurisdiction.",
+              Q: "Who can use betsweeps?",
+              A: "betsweeps is available to individuals aged 18 or older who reside in eligible jurisdictions. Users from Nevada and Washington, as well as other restricted areas, are prohibited from accessing the platform. Participants must comply with all local laws and regulations in their jurisdiction.",
               open: false,
             },
             {
-              Q: "Is 99wiwi free to use?",
-              A: "Yes, 99wiwi is a completely free-to-play platform. Users can participate in contests and games without any charges. Additional features such as credits and bonuses may also be available through promotions or optional purchases.",
+              Q: "Is betsweeps free to use?",
+              A: "Yes, betsweeps is a completely free-to-play platform. Users can participate in contests and games without any charges. Additional features such as credits and bonuses may also be available through promotions or optional purchases.",
               open: false,
             },
           ],
@@ -69,7 +69,7 @@ export default {
           questions: [
             {
               Q: "What are the rules for participating in contests?",
-              A: "Each contest on 99wiwi.net has its own set of rules, which are incorporated into the Terms of Service. Users must adhere to these rules and avoid prohibited activities such as collusion, use of automated tools, or multiple account registrations.",
+              A: "Each contest on betsweeps has its own set of rules, which are incorporated into the Terms of Service. Users must adhere to these rules and avoid prohibited activities such as collusion, use of automated tools, or multiple account registrations.",
               open: false,
             },
           ],
@@ -79,12 +79,12 @@ export default {
           questions: [
             {
               Q: "Can I delete my account?",
-              A: 'Yes, users can request to delete their accounts by contacting admin@99wiwi.net with the subject line "Delete Account." Please note that deleting your account is different from unsubscribing from email communications.',
+              A: 'Yes, users can request to delete their accounts by contacting contact@betsweeps.us with the subject line "Delete Account." Please note that deleting your account is different from unsubscribing from email communications.',
               open: false,
             },
             {
               Q: "How do I unsubscribe from marketing emails",
-              A: 'To unsubscribe from marketing emails, click the "unsubscribe" link in the email or send a request to admin@99wiwi.net with the subject line "Unsubscribe."',
+              A: 'To unsubscribe from marketing emails, click the "unsubscribe" link in the email or send a request to admin@betsweeps with the subject line "Unsubscribe."',
               open: false,
             },
           ],
@@ -94,7 +94,7 @@ export default {
           questions: [
             {
               Q: "How do I add funds to my Wallet?",
-              A: 'Users can add funds to their Wallet for purchasing credits displayed as "DLS" or other supported currencies. Wallet funds are for entertainment purposes only and do not hold real-world monetary value. For assistance with deposits, contact admin@99wiwi.net.',
+              A: 'Users can add funds to their Wallet for purchasing credits displayed as "SC" or other supported currencies. Wallet funds are for entertainment purposes only and do not hold real-world monetary value. For assistance with deposits, contact contact@betsweeps.us',
               open: false,
             },
             {
@@ -104,7 +104,7 @@ export default {
             },
             {
               Q: "What happens if I encounter an issue with a transaction?",
-              A: "If you experience any issues with deposits or withdrawals, please report the issue within 24 hours to admin@99wiwi.net. 99wiwi will thoroughly investigate all claims.",
+              A: "If you experience any issues with deposits or withdrawals, please report the issue within 24 hours to contact@betsweeps.us. betsweeps will thoroughly investigate all claims.",
               open: false,
             },
           ],
@@ -114,18 +114,18 @@ export default {
           sectionName: "Fairness and Security",
           questions: [
             {
-              Q: "How does 99wiwi ensure fairness?",
-              A: "99wiwi.net employs a provably fair system that governs all outcomes. This ensures complete transparency and fairness for all users. Any interface errors or glitches do not override the results generated by this system.",
+              Q: "How does betsweeps ensure fairness?",
+              A: "Betsweeps employs a provably fair system that governs all outcomes. This ensures complete transparency and fairness for all users. Any interface errors or glitches do not override the results generated by this system.",
               open: false,
             },
             {
-              Q: "How does 99wiwi protect my personal information?",
-              A: "99wiwi prioritizes your privacy and employs industry-standard security measures to protect your Personal Information from unauthorized access. Sensitive data, such as payment details, is transmitted securely. For more details, refer to our Privacy Policy.",
+              Q: "How does Betsweeps protect my personal information?",
+              A: "Betsweeps.us prioritizes your privacy and employs industry-standard security measures to protect your Personal Information from unauthorized access. Sensitive data, such as payment details, is transmitted securely. For more details, refer to our Privacy Policy.",
               open: false,
             },
             {
               Q: "What should I do if I notice prohibited conduct or security issues?",
-              A: "If you observe any violations of the Terms of Service, prohibited activities, or security vulnerabilities, please report them immediately to admin@99wiwi.net.",
+              A: "If you observe any violations of the Terms of Service, prohibited activities, or security vulnerabilities, please report them immediately to Betsweeps.us.",
               open: false,
             },
           ],
@@ -134,7 +134,7 @@ export default {
           sectionName: "Support and Disputes",
           questions: [
             {
-              Q: "How does 99wiwi handle disputes?",
+              Q: "How does Betsweeps.us handle disputes?",
               A: "Disputes are addressed through amicable resolution efforts. If unresolved, disputes are subject to binding arbitration as outlined in the Terms of Service. Class action waivers and limitations on liability apply.",
               open: false,
             },

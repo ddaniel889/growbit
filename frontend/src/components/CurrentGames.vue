@@ -75,7 +75,7 @@
             <span class="stat-label">Hourly Drop</span>
             <div class="stat-value">
               {{ game.hourlyDrop }}
-              <img src="/img/mmo_coin.png" class="currency-icon" alt="DL" />
+              <img src="/img/sc_icon.png" class="currency-icon" alt="DL" />
             </div>
           </div>
         </div>

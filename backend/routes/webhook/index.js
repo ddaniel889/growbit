@@ -19,15 +19,15 @@ module.exports = (io) => {
           //  const hmac = req.headers['x-nowpayments-sig'];
 
             // 1. VALIDACIÓN DE SEGURIDAD RECOMENDADA POR NOWPAYMENTS
-          /*  const checkHmac = crypto
+           const checkHmac = crypto
                 .createHmac('sha512', IPN_SECRET)
                 .update(JSON.stringify(paymentData, Object.keys(paymentData).sort()))
                 .digest('hex');
-
+           console.log('checkHmac',checkHmac)
             if (hmac !== checkHmac) {
                 console.error("⚠️ Invalid signature detected Webhook");
                 return res.status(401).send('Invalid signature');
-            }*/
+            }
           const successStates = ['finished', 'partially_paid'];  
     if (successStates.includes(paymentData.payment_status)) {
     

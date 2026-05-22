@@ -41,7 +41,7 @@
       <div>
         <span class="purple">Reward:</span>
         {{ challenge.reward }}
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
       </div>
     </div>
   </div>

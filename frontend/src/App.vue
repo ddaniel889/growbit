@@ -90,7 +90,7 @@ export default {
       "authUser",
     ]),
     showBanner() {
-      return !this.$route.path.startsWith("/admin");
+      return this.$route.path === "/";
     },
     showFooter() {
       return !this.$route.path.startsWith("/admin");

@@ -6,9 +6,9 @@
           <div class="inner-container">
             <router-link to="/" custom v-slot="{ navigate }">
                 <div @click="navigate" class="logo-wrapper">
-                  <img class="logo-large" src="/img/growbit_text.svg" />
+                  <img class="logo-large" src="/img/betsweeps.png" alt="Betsweeps Logo" />
                   <!-- Logo para Móvil (Agregado) -->
-                  <img class="logo-small" src="/img/growbit_text.svg" />
+                  <img class="logo-small" src="/img/betsweeps.png" alt="Betsweeps Logo" />
 
                 </div>
             </router-link>
@@ -23,7 +23,7 @@
                 :src="`/img/currencies/${selectedCurrency.toLowerCase()}_icon.png`" 
                 alt=""
                 />
-  
+
           <span
              class="balance-value"
             :style="balanceWidth"
@@ -50,7 +50,7 @@
     <span>
       {{ Number(item.balance).toLocaleString("en-US", { minimumFractionDigits: 2 }) }}
     </span>
-    <img :src="`/img/currencies/${item.currency.toLowerCase()}_icon.png`" />
+   <span class="">  <img  :src="`/img/currencies/${item.currency.toLowerCase()}_icon.png`" /></span> 
   </button>
           </div>
           </div>
@@ -108,16 +108,18 @@
               </div> -->
               <div
                 @click="generalToggleChat()"
-                class="hide-on-mobile"
+                class="hide-on-mobile has-tooltip"
                 :class="{ selected: generalChat && !supportChat }"
+                data-tooltip="Chat"
               >
                 <ChatIcon></ChatIcon>
               </div>
               <div
                 v-if="authUser?.user"
                 @click="generalToggleSupport()"
-                class="hide-on-mobile"
+                class="hide-on-mobile has-tooltip"
                 :class="{ selected: supportChat }"
+                data-tooltip="Support"
               >
                 <PhoneIcon></PhoneIcon>
               </div>
@@ -125,8 +127,9 @@
                 v-if="authUser?.user"
                 tag="div"
                 :to="`/profile`"
-                class="hide-on-mobile"
+                class="hide-on-mobile has-tooltip"
                 :class="{ notifications: hasProfileNotifications }"
+                data-tooltip="Profile User"
               >
                 <UserIcon></UserIcon>
               </router-link>
@@ -622,8 +625,9 @@ header {
     align-items: center;
     cursor: pointer;
     flex-shrink: 0;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
+    height: 100%;
+    overflow: visible;
+    transition: transform 0.3s ease;
     &:hover {
       transform: scale(1.05);
     }
@@ -634,30 +638,46 @@ header {
   }
 
   .logo-large {
-    height: 34px;
+    height: 120px;
     width: auto;
     //object-fit: contain;
+    margin-top: -10px; 
     display: block;
-
-    @media (max-width: 991px) {
-      display: none; // Se oculta en móvil
-    }
-
-    @media (min-width: 1400px) {
-      height: 38px;
-    }
-
-    @media (max-width: 1200px) {
-      height: 30px;
-    }
-  }
-
-  .logo-small {
-    display: none;
-    height: 36px;
-    width: auto;
     object-fit: contain;
+
+  @media (max-width: 991px) {
+    display: none;
   }
+
+  /* Ajustes para pantallas grandes */
+  @media (min-width: 1400px) {
+    height: 140px;
+  }
+
+  /* Ajuste para laptops */
+   @media (max-width: 1200px) {
+    height: 100px;
+  }
+  }
+
+.logo-small {
+  display: none;
+  /* Aumentamos significativamente el alto para compensar el espacio vacío de la imagen */
+  height: 110px; 
+  width: auto;
+  object-fit: contain;
+  
+  /* Esto moverá el logo hacia la izquierda y arriba para centrar la parte visible */
+  margin-left: -15px; 
+  margin-top: -5px;
+
+  @media (max-width: 991px) {
+    display: block;
+    /* Usamos scale para agrandar el logo real sin que el contenedor crezca demasiado */
+    transform: scale(1.6); 
+    transform-origin: left center;
+  }
+}
 
   @media (max-width: 991px) {
     .logo-large {
@@ -717,6 +737,8 @@ header {
       cursor: pointer;
       align-items: center;
       justify-content: center;
+
+
 
       .animated {
         position: absolute;
@@ -927,6 +949,66 @@ header {
       margin-left: auto;
       cursor: pointer;
 
+      /* Contenedor base del tooltip */
+.has-tooltip {
+  position: relative; /* Esencial para posicionar el tooltip respecto al botón */
+  
+  // Pseudo-elemento para el globo de texto
+  &::before {
+    content: attr(data-tooltip); /* Captura el texto dinámicamente del HTML */
+    position: absolute;
+    bottom: -38px; /* Lo posiciona justo debajo del botón */
+    left: 50%;
+    transform: translateX(-50%) translateY(10px); /* Centrado horizontal con desfase inicial */
+    
+    // Estilos de diseño (Colores oscuros/neón acordes al proyecto)
+    background-color: #1a1c38;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #2e3259;
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    
+    // Configuración para animación fluida (Fade-in + Slide)
+    opacity: 0;
+    pointer-events: none; /* Evita parpadeos molestos si el mouse pasa por encima */
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 99;
+  }
+
+  // Pseudo-elemento para la pequeña flecha apuntando arriba
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    
+    // Construcción de la flecha mediante bordes
+    border-width: 0 6px 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent #2e3259 transparent;
+    
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 100;
+  }
+
+  // Comportamiento al hacer Hover (Pasa el mouse)
+  &:hover {
+    &::before,
+    &::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0); /* Sube suavemente a su posición final */
+    }
+  }
+}
+
       &.ml-auto {
         margin-left: auto;
       }
@@ -1060,41 +1142,40 @@ header {
     }
   }
 
-  .menu-inner {
+.menu-inner {
+  width: 100%;
+  position: relative;
+  padding: 5px 0;
+  border-radius: 5px;
+  background-color: #22224a;
+  max-height: 300px;
+  overflow: scroll;
+
+  button {
     width: 100%;
-    position: relative;
-    padding: 5px 0;
-    border-radius: 5px;
-    background-color: #22224a;
-    max-height: 300px;
-    overflow: scroll;
-
-    button {
-      width: 100%;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: space-between;
-      padding: 0 17px;
-      border-radius: 0;
-      font-size: 0.857rem;
-      font-weight: 600;
-      color: #ffffff;
-      background-color: transparent;
-      border: none;
-      transition: all 0.3s ease;
-
-      img {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    padding: 0 17px;
+    border-radius: 0;
+    font-size: 0.857rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: transparent;
+    border: none;
+    transition: all 0.3s ease;
+     img {
         height: 18px;
         width: 18px;
       }
 
-      &:hover,
-      &.active {
-        background-color: #292950;
-      }
+    &:hover,
+    &.active {
+      background-color: #292950;
     }
   }
+}
 }
 </style>

@@ -106,7 +106,7 @@
           />
         </div>
         <div class="generate-input input-reward">
-          <img src="@/assets/images/mmo_coin.png" alt="icon" />
+          <img src="@/assets/images/sc_icon.png" alt="icon" />
           <input
             v-model="adminReward"
             type="number"

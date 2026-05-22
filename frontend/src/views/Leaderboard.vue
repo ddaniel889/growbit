@@ -103,7 +103,7 @@ import LeaderboardPodiumElement from "@/components/leaderboard/LeaderboardPodium
 import RaceTimer from "@/components/RaceTimer.vue";
 
 export default {
-  name: "Leaderboard",
+  name: "Leaderboard",//
   metaInfo: {
     title: "Leaderboard ",
   },

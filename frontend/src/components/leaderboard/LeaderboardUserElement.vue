@@ -22,14 +22,15 @@
         </div>
       </div>
     </td>
-    <td class="inner-prize">
-      <div class="prize-content">
-        <div class="content-value" v-if="winner !== null">
-          {{ Math.round(+winner.prize) }}
-        </div>
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
-      </div>
-    </td>
+  <td class="inner-prize">
+  <div class="prize-content">
+    <div class="content-value" v-if="winner !== null">
+      {{ Math.round(+winner.prize) }}
+    </div>
+    
+    <img src="@/assets/images/sc_icon.png" alt="icon" class="leaderboard-coin" />
+  </div>
+</td>
   </tr>
 </template>
 
@@ -128,15 +129,29 @@ td {
 
 .wagered-content,
 .prize-content {
-  justify-content: center;
-  width: 100%;
+
+  justify-content: flex-end;
+  padding-right: 25px;
   display: flex;
   align-items: center;
-  gap: 10px;
+
+  gap: 6px; 
+  height: 100%;
 }
 
-.prize-content {
-  justify-content: flex-end;
-  padding-right: 15px;
+.prize-content .leaderboard-coin {
+
+  height: 24px !important; 
+  width: auto !important;
+  object-fit: contain;
+  
+ 
+  transform: scale(1.1);
+
+  transform-origin: center right;
+  
+ 
+  margin: 0; 
+  flex-shrink: 0;
 }
 </style>

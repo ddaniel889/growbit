@@ -30,7 +30,7 @@ const generalSendPromoClaimSocket = async (
       code: { $regex: `^${data.code}$`, $options: "i" },
     })
       .select(
-        "code reward minWager redeemers redeemptionsTotal redeemptionsMax"
+        "code reward currency minWager redeemers redeemptionsTotal redeemptionsMax"
       )
       .lean();
     generalCheckSendPromoClaimCode(
@@ -44,20 +44,25 @@ const generalSendPromoClaimSocket = async (
       // Add promo code id to claim block array
       generalPromoClaimBlock.push(promoDatabase._id.toString());
 
+      // CAMBIO: Definimos dinámicamente cuál sub-billetera va a recibir el premio (sc o gc)
+      // Si en la base de datos no está especificado, por defecto caerá en 'wallet.sc'
+      const promoCurrency = promoDatabase.currency ? promoDatabase.currency.toLowerCase() : 'sc';
+      const walletField = `wallet.${promoCurrency}`;
+
       // Update claiming user, promo code and create balance transaction in database
       const dataDatabase = await Promise.all([
         User.findByIdAndUpdate(
           user._id,
           {
             $inc: {
-              balance: promoDatabase.reward,
+              [walletField]: promoDatabase.reward,  //
               "limits.betToWithdraw": Math.floor(promoDatabase.reward * 5),
             },
             updatedAt: new Date().getTime(),
           },
           { new: true }
         )
-          .select("balance xp stats rakeback mute ban verifiedAt updatedAt")
+          .select("balance wallet xp stats rakeback mute ban verifiedAt updatedAt")
           .lean(),
         PromoCode.findByIdAndUpdate(promoDatabase._id, {
           $push: {
@@ -85,7 +90,7 @@ const generalSendPromoClaimSocket = async (
         .to(user._id.toString())
         .emit("user", { user: dataDatabase[0] });
 
-      callback({ success: true });
+      callback({ success: true, user: dataDatabase[0] });
 
       // Remove promo code id from claim block array
       generalPromoClaimBlock.splice(

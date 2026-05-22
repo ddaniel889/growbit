@@ -58,7 +58,7 @@
     >
       <div class="element-name">SET TIP LIMIT</div>
       <div class="element-input">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <input v-model="adminLimitTip" type="text" />
         <button
           v-on:click="adminValueButton('limits.limitTip', adminLimitTip)"
@@ -124,7 +124,7 @@
     <div class="settings-element element-number">
       <div class="element-name">SET BALANCE</div>
       <div class="element-input">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <input v-model="adminBalance" type="text" />
         <button
           v-on:click="adminBalanceButton()"
@@ -150,7 +150,7 @@
     <div class="settings-element element-number">
       <div class="element-name">SET DEPOSIT</div>
       <div class="element-input">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <input v-model="adminDeposit" type="text" />
         <button
           v-on:click="adminValueButton('stats.deposit', adminDeposit)"
@@ -163,7 +163,7 @@
     <div class="settings-element element-number">
       <div class="element-name">SET WITHDRAW</div>
       <div class="element-input">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <input v-model="adminWithdraw" type="text" />
         <button
           v-on:click="adminValueButton('stats.withdraw', adminWithdraw)"

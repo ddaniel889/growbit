@@ -35,13 +35,13 @@
     </div>
 
     <div class="bottom">
-      {{ Math.round(+winner?.prize || "0") }}<img :src="TokenIcon" />
+      {{ Math.round(+winner?.prize || "0") }}<img :src="TokenIcon" class="leaderboard-coin" />
     </div>
   </div>
 </template>
 
 <script>
-import TokenIcon from "@/assets/images/mmo_coin.png";
+import TokenIcon from "@/assets/images/sc_icon.png";
 import Diamond from "@/assets/images/diamond.svg";
 import Bronze from "@/assets/images/bronze.svg";
 import Gold from "@/assets/images/gold.svg";
@@ -218,6 +218,22 @@ export default {
     color: var(--dark-blue-2);
     display: flex;
     gap: 5px;
+
+    .leaderboard-coin {
+
+  height: 24px !important; 
+  width: auto !important;
+  object-fit: contain;
+  
+ 
+  transform: scale(1.1);
+
+  transform-origin: center right;
+  
+  margin: 0; 
+  flex-shrink: 0;
+
   }
+}
 }
 </style>

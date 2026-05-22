@@ -79,7 +79,7 @@
           <div class="element-inner">
             Total Claimed
             <div class="inner-amount">
-              <img src="@/assets/images/mmo_coin.png" alt="icon" />
+              <img src="@/assets/images/sc_icon.png" alt="icon" />
               <div class="amount-value">
                 {{
                   modalFormatValue(modalsData.affiliate.affiliates.totalClaimed)
@@ -92,7 +92,7 @@
           <div class="element-inner">
             Wagered
             <div class="inner-amount">
-              <img src="@/assets/images/mmo_coin.png" alt="icon" />
+              <img src="@/assets/images/sc_icon.png" alt="icon" />
               <div class="amount-value">
                 {{ modalFormatValue(modalsData.affiliate.affiliates.wager) }}
               </div>
@@ -103,7 +103,7 @@
           <div class="element-inner">
             Available (before tax)
             <div class="inner-amount">
-              <img src="@/assets/images/mmo_coin.png" alt="icon" />
+              <img src="@/assets/images/sc_icon.png" alt="icon" />
               <div class="amount-value">
                 {{
                   modalFormatValue(modalsData.affiliate.affiliates.available)

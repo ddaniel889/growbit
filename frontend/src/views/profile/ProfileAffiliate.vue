@@ -35,7 +35,7 @@
       <div class="link-inner-wrapper">
         <div class="link-inner">
           <span class="inner-value">
-            https://99wiwi.net/r/{{
+            https://betsweeps.net/r/{{
               affiliatesData.data !== null &&
               affiliatesData.data.code !== undefined
                 ? affiliatesData.data.code
@@ -65,7 +65,7 @@
             affiliatesData.data && affiliatesData.data.canClaim,
           )
         }}
-        <Currency></Currency>
+        <Currency currency="sc"></Currency>
       </button>
     </div>
 
@@ -111,13 +111,13 @@
             <td>
               <div>
                 {{ getDisplayCurrencyAmountFormatted(affiliate.wager) }}
-                <Currency></Currency>
+                <Currency currency="sc"></Currency>
               </div>
             </td>
             <td>
               <div>
                 {{ getDisplayCurrencyAmountFormatted(affiliate.generated) }}
-                <Currency></Currency>
+                <Currency currency="sc"></Currency>
               </div>
             </td>
           </tr>
@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex"; //
 import ButtonLoading from "@/components/ButtonLoading";
 import CopyIcon from "@/assets/images/copy.svg?inline";
 import InfoIcon from "@/assets/images/info_icon.svg?inline";
@@ -157,7 +157,7 @@ export default {
       "notificationShow",
       "affiliatesSetCodeSocket",
       "affiliatesSendClaimEarningsSocket",
-      "affiliatesGetDataSocket",
+      "affiliatesGetDataSocket",//
     ]),
     affiliatesCopyButton() {
       const el = document.createElement("textarea");
@@ -224,6 +224,8 @@ export default {
     "affiliatesData.data": {
       handler(data, oldData) {
         if (this.affiliatesData.data) {
+          console.log('this.affiliatesData',this.affiliatesData)
+           console.log('this.affiliatesData.data',this.affiliatesData.data)
           this.affiliatesCode =
             (this.affiliatesData.data && this.affiliatesData.data.code) || "";
         }

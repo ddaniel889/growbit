@@ -15,7 +15,7 @@
     <div class="element-balance">
       <div class="balance-title">BALANCE</div>
       <div class="balance-content">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div class="content-value">
           <span>{{ adminFormatValue(user.balance) }}</span>
         </div>

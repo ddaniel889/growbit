@@ -8,7 +8,7 @@
             <Menu :size="24" />
           </button>
           <router-link to="/" class="admin-logo-wrapper">
-            <img src="/img/preloader-logo.svg" alt="Logo" class="logo-large" />
+            <img src="/img/betsweeps.png" alt="Logo" class="logo-large" />
           </router-link>
           <div class="nav-divider"></div>
           <h1 class="nav-title">Admin <span class="highlight">Panel</span></h1>
@@ -150,17 +150,38 @@ export default {
     }
 
     .admin-logo-wrapper {
-      display: flex;
-      align-items: center;
-      .logo-large {
-        height: 38px;
-        width: auto;
+  display: flex;
+  align-items: center;
+  /* Evitamos que el contenedor corte el logo al escalarlo */
+  overflow: visible; 
+  height: 100%;
 
-        @media (max-width: 500px) {
-          height: 30px;
-        }
-      }
+  .logo-large {
+    /* Subimos la altura base para compensar el aire de la imagen */
+    height: 110px; 
+    width: auto;
+    object-fit: contain;
+    
+    /* Centrado visual: ajusta el margen negativo para alinear con "ADMIN PANEL" */
+    margin-top: -5px; 
+    
+    /* Aplicamos escala para que el logo real se vea del tamaño correcto */
+    transform: scale(1.3);
+    transform-origin: left center;
+    
+    transition: transform 0.3s ease;
+
+    @media (max-width: 500px) {
+      /* En pantallas muy pequeñas, ajustamos la escala un poco menos */
+      height: 90px;
+      transform: scale(1.2);
     }
+
+    &:hover {
+      transform: scale(1.35);
+    }
+  }
+}
 
     .nav-divider {
       width: 1px;
@@ -178,6 +199,7 @@ export default {
       color: #eeeeee;
       text-transform: uppercase;
       letter-spacing: 1.5px;
+      padding-left: 15px !important;
       margin: 0;
       display: flex;
       gap: 8px;

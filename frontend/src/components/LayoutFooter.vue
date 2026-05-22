@@ -3,7 +3,7 @@
     <div class="footer-row">
       <div>
         <div>Casino</div>
-        <router-link to="/casino/originals">99wiwi Originals</router-link>
+        <router-link to="/casino/originals">Betsweeps</router-link>
         <router-link to="/casino/slots">Slots</router-link>
       </div>
       <div>
@@ -33,6 +33,27 @@
         </div>
       </div>
     </div>
+    <div class="section">
+      <p class="footer-disclaimer">
+        <strong>betsweeps.us</strong> is always free to play, with no purchase or payment required. 
+        betsweeps.us does not offer real-money gambling and does not provide prizes or rewards of 
+        real-world monetary value; all coins and rewards are for entertainment purposes only and have no cash value. 
+        Participation is limited to eligible players who are at least eighteen (18) years old and are not residents 
+        of any Restricted State. Void where prohibited by law.
+      </p>
+
+      <div class="footer-contacts">
+        <div class="contact-item">
+          <span class="contact-label">Support</span>
+          <a href="mailto:contact@betsweeps.us" class="contact-email">contact@betsweeps.us</a>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">Partners</span>
+          <a href="mailto:partners@betsweeps.us" class="contact-email">partners@betsweeps.us</a>
+        </div>
+      </div>
+    </div>
+
     <div class="title">Accepted Currencies</div>
     <div class="small-title">Crypto</div>
     <div class="currencies">
@@ -45,11 +66,11 @@
     <div class="currencies">
       <div>
         <img src="/img/growtopia/world_lock.png" />
-        WL
+        SC
       </div>
       <div>
         <img src="/img/growtopia/diamond_lock.png" />
-        DL
+        GC
       </div>
     </div>
     <p :style="{ display: 'none' }">license number: ALSI-202409024-FI2</p>
@@ -97,6 +118,67 @@ footer {
     font-size: 1.29rem;
     line-height: 26px;
     color: #ffffff;
+  }
+
+  
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(97, 100, 152, 0.15); 
+
+    .footer-disclaimer {
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #616498; 
+      margin: 0;
+      text-align: justify;
+
+      strong {
+        color: #eeeeee;
+        font-weight: 700;
+      }
+    }
+
+    .footer-contacts {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+
+      @media screen and (max-width: 768px) {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .contact-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .contact-label {
+          font-weight: 700;
+          font-size: 1.143rem;
+          color: #ffffff;
+        }
+
+        .contact-email {
+          font-weight: 400;
+          font-size: 1.05rem;
+          color: #5147ff; 
+          text-decoration: none;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: lighten(#5147ff, 15%);
+            text-decoration: underline;
+          }
+        }
+      }
+    }
   }
 
   .small-title {

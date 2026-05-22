@@ -11,7 +11,7 @@
       <div class="head-cont">
         <div class="header">
           <h1>{{ game.name }}</h1>
-          <p>{{ GAMING_PROVIDERS[game.type] || "99wiwi Originals" }}</p>
+          <p>{{ GAMING_PROVIDERS[game.type] || "Betsweeps" }}</p>
 
           <img :src="`/img/game/icon-${game.icon}.svg`" alt="" width="50px" />
         </div>

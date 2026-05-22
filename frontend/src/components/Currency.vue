@@ -1,7 +1,7 @@
 <template>
   <img
     class="currency"
-    :src="`/img/currencies/${displayCurrency}.png`"
+    :src="`/img/currencies/${displayCurrency}_icon.png`"
     alt="icon"
   />
 </template>

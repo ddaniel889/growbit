@@ -13,9 +13,7 @@
         :max="maxBetConverted"
       />
       <img
-        :src="`/img/currencies/${selectedCurrency}.${
-          selectedCurrency === 'sc' ? 'png' : 'png'
-        }`"
+        :src="`/img/currencies/${selectedCurrency.toLowerCase()}_icon.png`"
         alt="icon"
       />
       <div class="cashout-buttons">

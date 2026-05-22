@@ -1,6 +1,6 @@
 <template>
   <div class="terms">
-    <div class="terms-header">99wiwi TOS</div>
+    <div class="terms-header">betsweeps TOS</div>
 
     <div class="terms-content">
       <LoadingAnimation v-if="loadingTos"></LoadingAnimation>
@@ -68,7 +68,7 @@ export default {
   }
   .terms-content {
     overflow: scroll;
-
+    text-align: justify !important;
     font-weight: 500;
     font-size: 1.143rem;
     white-space: pre-wrap; /* Preserves spaces and line breaks */

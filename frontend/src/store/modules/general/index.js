@@ -340,6 +340,8 @@ const actions = {
 
     getters.socketGeneral.emit("sendPromoClaim", data, (res) => {
       if (res.success === true) {
+        commit("auth_update_user", res.user);
+        
         dispatch("notificationShow", {
           type: "success",
           message: "You've successfully claimed a promo code.",

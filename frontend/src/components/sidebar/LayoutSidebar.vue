@@ -13,12 +13,12 @@
     </div>
 
     <ol class="navigation">
-      <div
+      <!--div
         class="sidebar-banner"
         @click="$router.push('/cases')"
       >
         <img src="/img/sidebar_banner.png" alt="Jackpots" />
-      </div>
+      </div-->
       <SidebarItem
         :item="tab"
         :collapsed="false"
@@ -32,7 +32,8 @@
 <script>
 import { mapGetters } from "vuex";
 
-import OriginalsImage from "@/assets/images/Growbit_G.webp";
+//import OriginalsImage from "@/assets/images/Growbit_G.webp";
+import OriginalsImage from "@/assets/images/betsweeps.png";
 import PopularIcon from "@/assets/images/popular.svg?inline";
 import LiveIcon from "@/assets/images/live.svg?inline";
 import RewardsIcon from "@/assets/images/gift_bold.svg?inline";
@@ -97,7 +98,7 @@ export default {
           name: "Casino",
           url: "",
           items: [
-            { name: "Growbit Games", icon: GrowbitG, url: "/casino/originals" },
+            { name: "Betsweeps Games", icon: GrowbitG, url: "/casino/originals" },
             {
               name: "Popular",
               icon: PopularIcon,

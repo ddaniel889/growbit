@@ -219,7 +219,7 @@ module.exports = () => {
             .exec();
 
           if (!referrer) {
-            logger.error("Invalid affiliate code:", code);
+            logger.error("Invalid affiliate code:", code); //
 
             return res.status(500).json({
               success: false,

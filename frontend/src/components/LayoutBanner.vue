@@ -1,7 +1,7 @@
 <template>
   <div class="layout-banner">
     <div class="banner-wrapper">
-      <img src="/img/banner.png" alt="No Purchase Necessary" />
+      <img src="/img/bannersc.png" alt="No Purchase Necessary" />
     </div>
   </div>
 </template>

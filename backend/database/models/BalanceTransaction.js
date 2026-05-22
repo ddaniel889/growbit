@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const balanceTransactionSchema = new mongoose.Schema({
   amount: { type: Number },
   type: { type: String },
+  currency: { type: String, default: '' },
   user: { type: mongoose.Schema.ObjectId, ref: "User" },
   state: { type: String },
   providerId: { type: String, unique: true, sparse: true },

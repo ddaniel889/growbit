@@ -17,6 +17,7 @@ const leaderboardSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
   endsAt: { type: Date },
   createdAt: { type: Date, default: Date.now },
+  //currency: { type: String, enum: ["sc", "gc"], default: "sc" },
 });
 
 module.exports = mongoose.model("Leaderboard", leaderboardSchema);

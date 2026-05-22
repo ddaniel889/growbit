@@ -1,14 +1,14 @@
 <template>
   <div class="app-loader" :class="{ absolute: !fullScreen }">
     <div class="central-container">
-      <img src="/img/preloader-logo.svg" alt="99wiwi Loader" />
+      <img src="/img/betsweeps.png" alt="betsweeps Loader" />
       <div class="loader-line"></div>
     </div>
   </div>
 </template>
 
 <script>
-export default {
+export default {//
   name: "AppLoader",
   props: {
     fullScreen: {
@@ -18,6 +18,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .app-loader {
@@ -45,72 +46,77 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1;
-  img {
-    height: 80px;
-    filter: drop-shadow(0 0 15px rgba(204, 33, 49, 0.2));
-    animation: pulse 2s ease-in-out infinite;
-    max-width: 80vw;
-    object-fit: contain;
+  width: 100%;
+}
 
-    @media screen and (max-width: 991px) {
-      height: 60px;
-    }
+.app-loader .central-container img {
+  /* Altura base aumentada para compensar el espacio transparente del asset */
+  height: 280px; 
+  width: auto;
+  filter: drop-shadow(0 0 25px rgba(204, 33, 49, 0.4));
+  animation: pulse 2s ease-in-out infinite;
+  max-width: 90vw;
+  object-fit: contain;
 
-    @media screen and (max-width: 480px) {
-      height: 50px;
-    }
+  /* Aplicamos un escalado base para que el logo real sea imponente */
+  transform: scale(1.5);
+  
+  /* Margen negativo inferior para que la barra de carga no quede muy lejos 
+     debido al aire transparente de la imagen */
+  margin-bottom: -40px; 
 
-    @media screen and (max-width: 360px) {
-      height: 40px;
-    }
+  @media screen and (max-width: 991px) {
+    height: 220px;
+    margin-bottom: -30px;
+  }
 
+  @media screen and (max-width: 480px) {
+    height: 180px;
+    margin-bottom: -20px;
+  }
+
+  @media screen and (max-width: 360px) {
+    height: 140px;
+    margin-bottom: -10px;
   }
 }
 
 @keyframes pulse {
   0% {
-    transform: scale(1);
+    transform: scale(1.5);
     opacity: 0.9;
   }
   50% {
-    transform: scale(1.02);
+    transform: scale(1.55);
     opacity: 1;
   }
   100% {
-    transform: scale(1);
+    transform: scale(1.5);
     opacity: 0.9;
   }
 }
 
 .loader-line {
-  width: 90%;
-  max-width: 300px;
-  height: 3px;
+  width: 80%;
+  max-width: 250px;
+  height: 4px;
   position: relative;
   overflow: hidden;
   background-color: rgba(204, 33, 49, 0.1);
-  margin: 30px auto;
-  @media screen and (max-width: 991px) {
-    margin: 20px auto;
-  }
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
+  margin: 0 auto;
   border-radius: 20px;
+  z-index: 2;
 }
 
 .loader-line:before {
   content: "";
   position: absolute;
   left: -50%;
-  height: 3px;
+  height: 4px;
   width: 40%;
   background-color: #cc2131;
   box-shadow: 0 0 10px rgba(204, 33, 49, 0.5);
-  -webkit-animation: lineAnim 1.5s ease-in-out infinite;
-  -moz-animation: lineAnim 1.5s ease-in-out infinite;
   animation: lineAnim 1.5s ease-in-out infinite;
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
   border-radius: 20px;
 }
 

@@ -118,17 +118,19 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0; // Eliminamos cualquier espacio interno que empuje la imagen
+  
+  /* Importante: Mantiene el recorte de las esquinas si el modal es redondeado */
+  overflow: hidden; 
 
-  padding: 0;
-
-  /* Overlay gradient to ensure text readability */
   &::before {
-   content: "";
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    /* Gradiente sutil para integrar la imagen con el fondo oscuro del sitio */
     background: linear-gradient(
       180deg,
       rgba(30, 32, 74, 0.4) 0%, 
@@ -138,7 +140,7 @@ export default {
   }
 
   @media screen and (max-width: 991px) {
-    display: none;
+    display: none; // Oculta el banner en dispositivos móviles para ahorrar espacio
   }
 
   .banner-content {
@@ -146,50 +148,18 @@ export default {
     z-index: 2;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    h2 {
-      font-size: 1.1rem;
-      margin-bottom: 20px;
-      letter-spacing: 3px;
-      color: #00c6ff;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
+    display: block; // Cambiado a block para que la imagen sea el contenedor principal
 
     .banner-logo {
-    
       width: 100%;
       height: 100%;
-      /* 'cover' hará que la imagen cubra todo el espacio sin deformarse, 
-         'contain' hará que se vea completa ocupando el máximo posible */
-      object-fit: contain; 
-      padding: 20px; 
+      /* 'cover' asegura que la imagen se expanda y llene todo el recuadro izquierdo */
+      object-fit: cover; 
+      margin: 0;
+      padding: 0; // Quitamos el padding previo que causaba el marco vacío
       filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.4));
-
-      @media screen and (max-width: 1200px) {
-        height: 60px;
-      }
-    }
-
-
-    .logo-text {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 25px;
-      background: linear-gradient(135deg, #ffffff 0%, #a5aabf 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    h3 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      line-height: 1.4;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      
+      /* Eliminamos cualquier restricción de altura previa en media queries */
     }
   }
 }

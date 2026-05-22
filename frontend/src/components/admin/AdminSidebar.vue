@@ -6,20 +6,20 @@
   >
     <div class="sidebar-header">
       <router-link to="/" class="logo-link">
-        <img src="/img/growbit_text.svg" alt="Logo" class="sidebar-logo" />
+        <img src="/img/betsweeps.png" alt="Logo" class="sidebar-logo" />
       </router-link>
     </div>
 
 
     <div class="navigation-scroll">
       <ol class="navigation">
-        <div
+        <!--div
           class="sidebar-banner"
           @click="$router.push('/cases')"
           style="width: 100%; margin-bottom: 15px; cursor: pointer; border-radius: 8px; overflow: hidden;"
         >
           <img src="/img/sidebar_banner.png" alt="Jackpots" style="width: 100%; display: block;" />
-        </div>
+        </div-->
         <SidebarItem
           v-for="section in menuSections"
           :key="section.name"
@@ -135,24 +135,35 @@ export default {
     width: 100%;
 
     .logo-link {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      .sidebar-logo {
-        height: 36px;
-        width: auto;
-      }
-    }
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; // Asegura que se alinee al inicio del sidebar
+  padding: 10px 20px; // Ajusta según el diseño de tu sidebar
+  overflow: visible;
 
-    .logo-link {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      .sidebar-logo {
-        height: 36px;
-        width: auto;
-      }
+  .sidebar-logo {
+    /* Subimos la altura a un valor que compense el vacío de la imagen */
+    height: 100px; 
+    width: auto;
+    object-fit: contain;
+    
+    /* Centramos el logo real usando márgenes negativos */
+    margin-top: -5px; 
+    margin-left: -13px;
+
+    /* Aumentamos el tamaño visual con scale */
+    transform: scale(1.4);
+    transform-origin: left center;
+    
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.45);
     }
+  }
+}
+
 
     .header-title {
       font-size: 1rem;

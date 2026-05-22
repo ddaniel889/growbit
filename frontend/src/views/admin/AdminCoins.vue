@@ -6,7 +6,7 @@
       </div>
       
       <div class="currency-list">
-        <!-- Iteramos sobre las monedas configuradas -->
+    
         <div v-for="currency in availableCurrencies" :key="currency.id" class="currency-row">
           <div class="currency-info">
             <img :src="`/img/currencies/${currency.id.toLowerCase()}_icon.png`" class="currency-icon" />
@@ -14,7 +14,7 @@
           </div>
           
           <div class="currency-actions">
-            <!-- Aquí podrías poner botones de Editar o ver estadísticas en el futuro -->
+        
             <span class="status-badge active">Active</span>
           </div>
         </div>

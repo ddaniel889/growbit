@@ -165,7 +165,7 @@ export default {
           icon: CasinoIcon,
           items: [
             {
-              name: "99wiwi Originals",
+              name: "Betsweeps",
               icon: OriginalsIcon,
               url: "/casino/originals",
             },

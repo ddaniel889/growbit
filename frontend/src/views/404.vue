@@ -2,12 +2,8 @@
   <div class="container">
     <img src="../assets/images/404image.png" alt="missing-pika" />
     <div class="title">
-      Damn ni**a, seems this page is <span> missing! </span>
+      Seems this page is <span> missing! </span>
     </div>
-    <div class="subtitle">
-      Just like your luck(you've lost 4,723 DLS this month so far).
-    </div>
-
     <router-link to="/" as="div" class="home">
       <p>Go home</p>
     </router-link>

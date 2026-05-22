@@ -43,12 +43,12 @@ const generalSendRakebackClaimSocket = async (
       User.findByIdAndUpdate(
         user._id,
         {
-          $inc: { balance: rakebackData.available },
+          $inc: { "wallet.sc": rakebackData.available }, //  $inc: { balance: rakebackData.available }
           [`rakeback.${rakebackType}.available`]: 0,
           [`rakeback.${rakebackType}.lastClaimed`]: new Date(),
         },
         { new: true },
-      ).select("balance xp stats rakeback mute ban verifiedAt updatedAt"),
+      ).select("balance wallet xp stats rakeback mute ban verifiedAt updatedAt"),
       BalanceTransaction.create({
         amount: rakebackData.available,
         type: `${rakebackType}RakebackClaim`,

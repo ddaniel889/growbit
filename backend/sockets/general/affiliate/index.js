@@ -19,7 +19,7 @@ const {
   claimAffiliateEarnings,
   getAffiliateLevel,
   getAffiliateList,
-} = require("../../../services/general/affiliate");
+} = require("../../../services/general/affiliate");//
 
 
 module.exports = (io, socket) => {
@@ -41,7 +41,7 @@ module.exports = (io, socket) => {
         let user = null;
         if (socket.decoded !== undefined && socket.decoded !== null) {
           user = await User.findById(socket.decoded._id)
-            .select("username avatar rank affiliates agreed mute ban")
+            .select("username avatar rank affiliates wallet agreed mute ban")
             .lean();
         }
         socketCheckUserData(user, true);
@@ -49,11 +49,12 @@ module.exports = (io, socket) => {
 
         const levelInfo = getAffiliateLevel(user);
 
-        const affiliateList = (await getAffiliateList(user._id)).map((u) => ({
+        const affiliateList = (await getAffiliateList(user._id)).map((u) => ({ //
           username: u.username,
-          joined: u.createdAt,
-          wager: u.stats.bet,
-          generated: u.affiliates.generated * levelInfo.commission,
+          joined: u.createdAt || new Date(),
+          // u.stats.bet debe registrar el volumen en valor de moneda real (SC) desde los controladores de juego
+          wager: (u.stats && u.stats.bet) || 0,   //wager: u.stats.bet
+          generated: ((u.affiliates && u.affiliates.generated) || 0) * levelInfo.commission,  // generated: u.affiliates.generated * levelInfo.commission
         }));
 
         let canClaim = user.affiliates.available * levelInfo.commission;

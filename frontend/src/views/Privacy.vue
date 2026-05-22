@@ -1,225 +1,265 @@
 <template>
   <div class="terms">
     <div class="terms-header">
-      <div class="header-title">99wiwi Privacy Policy</div>
+      <div class="header-title">Betsweeps Privacy Policy</div>
     </div>
     <div class="terms-list">
       <div class="list-element">
         <div class="element-text">
           <p>
-            <strong>PLEASE READ THIS PRIVACY POLICY CAREFULLY.</strong> BY
-            ACCESSING, SUBSCRIBING, OR USING OUR WEBSITE, YOU ACKNOWLEDGE THAT
-            YOU HAVE READ, UNDERSTOOD, AND AGREED TO ALL TERMS OUTLINED IN THIS
-            PRIVACY POLICY ("POLICY"). IF YOU DO NOT AGREE WITH THESE TERMS,
-            PLEASE IMMEDIATELY CEASE USE OF THIS WEBSITE.
+            <strong>PLEASE READ THESE TERMS OF SERVICE CAREFULLY.</strong> These Terms of Service (“Terms”) constitute a
+legally binding agreement between you (“User,” “you,” or “your”) and BetSweeps.us (“BetSweeps,” “we,” “us,”
+or “our”). By accessing or using the Services, you acknowledge that you have read, understood, and agree to
+be bound by these Terms, our Privacy Policy, and our Official Sweepstakes Rules. If you do not agree, you
+must immediately discontinue use of the Services.
           </p>
 
-          <p>
-            99wiwi.net ("99wiwi," "we," "us," or "our") is committed to
-            respecting your privacy and safeguarding your personal information.
-            This Privacy Policy outlines our practices regarding the collection,
-            use, and disclosure of personal information when you use our
-            services ("Services") or website ("Website").
-          </p>
-
-          <p>
-            We reserve the right to modify this Policy at any time. Updates will
-            be posted on this page, and you are encouraged to periodically
-            review the Policy to stay informed of any changes. By continuing to
-            use the Website after modifications, you agree to the updated terms.
-          </p>
         </div>
       </div>
       <div class="list-element">
-        <div class="element-title">1. Information We Collect</div>
+        <div class="element-title">1. Information</div>
         <div class="element-text">
           <p>
-            While using our Website and Services, you may provide us with
-            personal information that identifies or relates to you ("Personal
-            Information"). The types of information we may collect include, but
-            are not limited to:
+           Welcome to BetSweeps.us. These Terms govern your access to and use of the BetSweeps.us website,
+mobile applications, games, sweepstakes promotions, and any related services (collectively, the “Services”).
+BetSweeps reserves the right to modify, suspend, or discontinue any part of the Services at any time, with or
+without notice
           </p>
-
-          <ul>
-            <li>
-              <strong>Identifying Information</strong>: Your name, email
-              address, and billing details.
-            </li>
-            <li>
-              <strong>Usage Data</strong>: Information your browser sends when
-              you visit our Website, such as your IP address, browser type,
-              device identifiers, and the pages you visit.
-            </li>
-            <li>
-              <strong>Cookies and Tracking Data</strong>: Small data files
-              stored on your device to enhance user experience, save
-              preferences, and analyze site traffic. Persistent cookies may be
-              used to store login credentials for easier access.
-            </li>
-          </ul>
         </div>
       </div>
 
       <div class="list-element">
-        <div class="element-title">2. How We Use Your Information</div>
+        <div class="element-title">2. Eligibility</div>
         <div class="element-text">
-          <h3>How We Use Your Personal Information</h3>
-          <p>Your Personal Information is used to:</p>
+        
+          <p>To register for and use the Services, you must:</p>
           <ol>
-            <li>Provide, maintain, and improve the Website and Services.</li>
+            <li>Be at least 18 years of age, or the age of majority in your jurisdiction, whichever is higher;</li>
             <li>
-              Administer your account and facilitate your participation in
-              Website activities.
+              Be a legal resident of the United States, excluding the following restricted territories: Washington,
+Nevada, Idaho, Michigan, and any other jurisdiction where participation is prohibited by law;
             </li>
-            <li>Enhance user experience and functionality.</li>
+            <li>Not be a person otherwise prohibited from participating in promotional sweepstakes under any
+applicable law, regulation, or order;</li>
             <li>
-              Fulfill requests, respond to inquiries, and process transactions.
+              Have full legal capacity to enter into a binding agreement.
             </li>
-            <li>
-              Send notifications regarding updates, promotions, or other
-              relevant information.
-            </li>
-            <li>Personalize content and offers tailored to your interests.</li>
+          
           </ol>
           <p>
-            We may also use aggregated, non-identifiable data to analyze usage
-            patterns, improve Website functionality, and derive insights into
-            user behavior.
+           By using the Services, you represent and warrant that you meet all eligibility requirements set forth above.
+BetSweeps reserves the right to verify your eligibility at any time and to suspend or terminate your account if
+any representation proves false.
           </p>
         </div>
       </div>
 
       <div class="list-element">
-        <div class="element-title">3. Sharing Your Information</div>
+        <div class="element-title">3. Account Registration</div>
         <div class="element-text">
           <p>
-            99wiwi may share your Personal Information with trusted third
-            parties, including:
+            To access certain features of the Services, you must create an account. When registering, you agree to:
           </p>
           <ul>
             <li>
-              <strong>Service Providers</strong>: To perform website-related
-              services such as payment processing, hosting, analytics, and
-              maintenance.
+              Provide accurate, current, and complete information;
             </li>
             <li>
-              <strong>Compliance and Legal Obligations</strong>: To cooperate
-              with law enforcement, comply with legal requirements, or protect
-              our rights and property.
+              Maintain and promptly update your account information as needed;
             </li>
             <li>
-              <strong>Business Transactions</strong>: In the event of a merger,
-              acquisition, or sale, your information may be transferred as part
-              of the transaction.
+              Maintain the security and confidentiality of your login credentials;
+            </li>
+             <li>
+              Notify BetSweeps immediately of any unauthorized use of your account or any other breach of security;
+            </li>
+              <li>
+              Be solely responsible for all activity that occurs under your account.
             </li>
           </ul>
           <p>
-            Third parties receiving your information are authorized to use it
-            solely for the purposes specified above.
+            Each individual is permitted only one (1) BetSweeps account. The creation of duplicate, fraudulent, or
+shared accounts is strictly prohibited and will result in immediate termination and forfeiture of any balances or
+prizes
           </p>
         </div>
       </div>
 
       <div class="list-element">
-        <div class="element-title">4. Your Rights</div>
+        <div class="element-title">4. Sweepstakes Promotional Model & Virtual Currencies</div>
         <div class="element-text">
-          <h3>Your Rights</h3>
-          <p>You have the right to:</p>
+          <p>BetSweeps.us operates under a promotional sweepstakes model and uses two virtual currencies:</p>
           <ul>
             <li>
-              <strong>Access and Update Information</strong>: Request details of
-              your stored Personal Information and correct inaccuracies.
+              <strong>Gold Coins (GC):</strong>Virtual entertainment credits used solely for standard gameplay. Gold Coins hold
+no monetary value and may not be redeemed, exchanged, or transferred.
             </li>
             <li>
-              <strong>Unsubscribe from Communications</strong>: Opt out of
-              marketing emails by clicking the "unsubscribe" link provided in
-              emails or contacting us directly.
+              <strong>Sweeps Coins (SC):</strong>Virtual credits used to participate in promotional sweepstakes. Eligible Sweeps
+Coins may, subject to verification and minimum requirements, be redeemed for prizes as described
+in the Official Sweepstakes Rules.
             </li>
-            <li>
-              <strong>Request Deletion</strong>: Permanently delete your account
-              by contacting us at
-              <a href="mailto:admin@99wiwi.net">admin@99wiwi.net</a> with the
-              subject line "Delete Account."
-            </li>
-          </ul>
+              </ul>
+            <P>
+              <strong>No purchase is necessary</strong>to obtain Sweeps Coins or to participate in any sweepstakes promotion.
+Alternative methods of entry are available and described in the Official Sweepstakes Rules. Void where
+prohibited.
+            </P>
+        
         </div>
       </div>
 
       <div class="list-element">
-        <div class="element-title">5. Security Measures</div>
+        <div class="element-title">5. User Conduct</div>
         <div class="element-text">
-          <h3>Security Measures</h3>
           <p>
-            We implement industry-standard security measures to protect your
-            Personal Information from unauthorized access, misuse, or
-            disclosure. Sensitive data, such as passwords and payment details,
-            is transmitted through secure networks.
+            You agree to use the Services only for lawful purposes and in accordance with these Terms. You will not, and
+will not permit any third party to:
           </p>
-          <p>
-            Despite our efforts, no method of transmission or electronic storage
-            is completely secure. Therefore, we cannot guarantee absolute
-            security.
-          </p>
+            <ul>
+            <li>
+              Use the Services for any illegal, fraudulent, or unauthorized purpose;
+            </li>
+            <li>
+            Engage in collusion, cheating, or manipulation of any game or sweepstakes outcome;
+            </li>
+                <li>
+            Use bots, scripts, automated tools, or any software designed to gain an unfair advantage;
+            </li>
+            <li>
+            Create multiple accounts or impersonate any person or entity;
+            </li>
+               <li>
+            Attempt to access, reverse-engineer, decompile, or interfere with any part of the Services or its
+underlying systems;
+            </li>
+               <li>
+            Use the Services to launder money, finance illegal activity, or evade taxes;
+            </li>
+               <li>
+            Upload, transmit, or distribute harmful, abusive, defamatory, or otherwise objectionable content;
+            </li>
+              <li>
+            Violate any applicable law, regulation, or third-party right.
+            </li>
+            </ul>
+            <p>
+              Violations may result in suspension or termination of your account, forfeiture of any winnings or balances,
+and, where appropriate, referral to law enforcement.
+            </p>
         </div>
       </div>
 
       <div class="list-element">
-        <div class="element-title">6. Cookies and Tracking Technologies</div>
+        <div class="element-title">6. Prize Redemption and Identity Verification</div>
         <div class="element-text">
-          <h3>Use of Cookies</h3>
-          <p>We use cookies to:</p>
-          <ul>
-            <li>Enhance website functionality.</li>
-            <li>Analyze traffic and user interaction.</li>
-            <li>Store user preferences and session information.</li>
-          </ul>
+        
+          <p>Redemption of Sweeps Coins for prizes is subject to: (a) minimum gameplay requirements as described in
+the Official Sweepstakes Rules; (b) identity verification (“KYC”), which may require submission of
+government-issued identification, proof of address, and other documentation; and (c) compliance with all
+applicable anti-fraud, anti-money-laundering, and tax-reporting obligations. BetSweeps reserves the right to
+delay or deny any redemption pending verification, or where there is reasonable suspicion of fraud, abuse, or
+violation of these Terms.</p>
+        </div>
+      </div>
+      <div class="list-element">
+        <div class="element-title">7. Intellectual Property</div>
+        <div class="element-text">
           <p>
-            You may disable cookies through your browser settings; however,
-            doing so may limit your ability to use certain features of the
-            Website.
+            All content available through the Services — including text, graphics, logos, software, audio, video, game
+artwork, and source code — is the property of BetSweeps or its licensors and is protected by United States
+and international intellectual property laws. You are granted a limited, non-exclusive, non-transferable,
+revocable license to access and use the Services solely for personal, non-commercial purposes. Any other
+use, including reproduction, modification, distribution, or public display, is strictly prohibited without prior
+written consent.
           </p>
         </div>
       </div>
       <div class="list-element">
-        <div class="element-title">7. Third-Party Links</div>
+        <div class="element-title">8. Termination</div>
         <div class="element-text">
-          <h3>Third-Party Links</h3>
           <p>
-            Our Website may contain links to third-party websites. We are not
-            responsible for the privacy practices or content of these external
-            sites. We encourage you to review their privacy policies before
-            providing any personal information.
+          BetSweeps reserves the right, in its sole discretion, to suspend, restrict, or terminate your account and
+        access to the Services at any time, with or without notice, including (but not limited to) for:
+          </p>
+             <ul>
+            <li>
+              Violation of these Terms or the Official Sweepstakes Rules;
+            </li>
+            <li>
+            Suspected fraud, abuse, or unauthorized activity;
+            </li>
+            <li>
+          Extended inactivity;
+            </li>
+                <li>
+         Any reason BetSweeps deems necessary to protect the integrity of the platform, its users, or its
+         operations
+            </li>
+            </ul>
+            <p>
+              Upon termination, all rights granted to you under these Terms will cease, and any remaining balances may be
+forfeited. Provisions intended to survive termination — including those relating to intellectual property, liability,
+indemnification, and dispute resolution — shall remain in full force and effect.
+            </p>
+        </div>
+      </div>
+      <div class="list-element">
+        <div class="element-title">9. Disclaimer of Warranties and Limitation of Liability</div>
+        <div class="element-text">
+          <p>
+           The Services are provided on an <strong>“AS IS”</strong> and <strong>“AS AVAILABLE”</strong> basis, without warranties of any kind,
+express or implied. To the fullest extent permitted by law, BetSweeps disclaims all warranties, including
+warranties of merchantability, fitness for a particular purpose, and non-infringement. BetSweeps does not
+guarantee that the Services will be uninterrupted, error-free, or secure
+          </p>
+          <p>
+           To the maximum extent permitted by applicable law, in no event shall BetSweeps, its affiliates, officers,
+employees, or licensors be liable for any indirect, incidental, special, consequential, or punitive damages
+arising out of or in connection with your use of the Services, even if advised of the possibility of such
+damages
           </p>
         </div>
       </div>
       <div class="list-element">
-        <div class="element-title">8. Compliance with Laws</div>
+        <div class="element-title">10. Dispute Resolution and Arbitration</div>
         <div class="element-text">
           <p>
-            99wiwi reserves the right to disclose your Personal Information to
-            comply with legal obligations, enforce our Terms of Service, or
-            protect the safety and rights of our users or the public.
+            Any dispute, claim, or controversy arising out of or relating to these Terms or the Services shall be resolved
+as follows:
           </p>
+          <ol>
+            <li>
+              <strong> Informal Resolution.</strong>  The parties shall first attempt to resolve any dispute informally by contacting
+support@betsweeps.us. Most concerns can be resolved promptly through good-faith discussion.
+            </li>
+            <li>
+             <strong> Binding Arbitration.</strong> If informal resolution fails within thirty (30) days, the dispute shall be resolved
+exclusively through binding individual arbitration administered by a recognized arbitration provider, in
+accordance with its then-current rules.
+            </li>
+            <li>
+               <strong>Class Action Waiver.</strong> You and BetSweeps agree that any arbitration or proceeding shall be
+conducted on an individual basis only, and not as a class, collective, consolidated, or representative
+action. You expressly waive any right to participate in a class action.
+            </li>
+            <li>
+              <strong>Governing Law.</strong> These Terms shall be governed by and construed in accordance with the laws of
+the United States, without regard to its conflict-of-law principles
+            </li>
+          </ol>
         </div>
       </div>
-      <div class="list-element">
-        <div class="element-title">9. International Data Transfers</div>
+
+          <div class="list-element">
+        <div class="element-title">11. Changes to Terms</div>
         <div class="element-text">
           <p>
-            If you are located outside of the jurisdiction in which our servers
-            operate, please note that your information may be transferred to,
-            processed, and stored in a country with different data protection
-            laws. By using our Website, you consent to such transfers.
-          </p>
-        </div>
-      </div>
-      <div class="list-element">
-        <div class="element-title">10. Updates to This Policy</div>
-        <div class="element-text">
-          <p>
-            We may update this Privacy Policy from time to time. Changes will be
-            effective immediately upon posting on this page. Your continued use
-            of the Website constitutes acceptance of the revised Policy.
+       BetSweeps reserves the right to modify, update, or replace these Terms at any time, in its sole discretion.
+Material changes will be communicated by posting the revised Terms on the website and updating the “Last
+Updated” date. Your continued use of the Services after any such modification constitutes your acceptance of
+the revised Terms. If you do not agree to any change, you must discontinue use of the Services.
+
           </p>
         </div>
       </div>
@@ -228,17 +268,15 @@
         <div class="element-title">Contact Us</div>
         <div class="element-text">
           <p>
-            If you have any questions, concerns, or requests related to this
-            Privacy Policy, please contact us at:
+           For questions, concerns, or notices related to these Terms, please contact us at:
           </p>
           <ul>
             <li>
               <strong>Email</strong>:
-              <a href="mailto:admin@99wiwi.net">admin@99wiwi.net</a>
+              <a href="mailto:Email:support@betsweeps.us">support@betsweeps.us</a>
             </li>
-            <li><strong>Subject Line</strong>: Privacy Policy Inquiry</li>
+            <li><strong>Subject Line:</strong> Terms of Service Inquiry</li>
           </ul>
-          <p>Thank you for trusting 99wiwi. Your privacy is our priority.</p>
         </div>
       </div>
     </div>

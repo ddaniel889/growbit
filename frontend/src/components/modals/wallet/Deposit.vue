@@ -18,7 +18,7 @@
         @click.stop="selectCurrency(coin)"
       >
         <img :src="coin.logo_url" class="coin-icon" />
-        <span>{{ coin.name }} ({{ coin.code.toUpperCase() }})</span>
+        <span>{{ coin.displayName }}</span>
       </div>
     </div>
   </div>
@@ -79,7 +79,7 @@
   <div class="network-info" >
     <label>NETWORK</label>
     <div class="network-badge">
-      <img :src="`/img/cashier/${paymentData?.network.toLowerCase()}.png`" alt="">
+      <img :src="`/img/cashier/${paymentData?.network.toLowerCase()}.png`"  alt="network logo" style="width: 40px !important; height: 40px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block;">
       {{ paymentData?.network }} Network
     </div>
   </div>
@@ -171,7 +171,7 @@ export default {
       const addedAmount = data.added ? data.added.sc : 0;
       this.$store.dispatch("notificationShow", {
         type: "success",
-        message: `¡Depósito acreditado! +${addedAmount.toFixed(2)} USD.`
+        message: `¡The deposit has been credited! +${addedAmount.toFixed(2)} USD.`
       });
 
       //  Cerrar modal
@@ -219,30 +219,69 @@ export default {
       message: "Address copied to clipboard!"
     });
   },
-    async fetchCurrencies() {
-      try {
-        // Consumimos tu endpoint de Node
-        const response = await axios.get(`${process.env.VUE_APP_BACKEND_URL}/full-currencies`);
-        // Filtramos para asegurar que tenemos tickers válidos
-        console.log('response',response)
-        this.currenciesList = response.data.sort((a, b) => a.name.localeCompare(b.name));
-      } catch (error) {
-        console.error("Error cargando monedas", error);
-      }
-    },
+async fetchCurrencies() {
+  try {
+    const response = await axios.get(`${process.env.VUE_APP_BACKEND_URL}/full-currencies`);
+    console.log('response raw data', response.data);
+
+    const myCryptoCodes = [
+      'btc',         // Bitcoin
+      'ltc',         // Litecoin
+      'sol',         // Solana
+      'eth',         // Ethereum
+      'usdttrc20',   // USDT (TRON)
+      'usdtbsc',     // USDT (BSC)
+      'usdterc20',   // USDT (ETH)
+      'usdtmatic'    // USDT (Polygon)
+    ];
+
+  
+    const filteredCurrencies = response.data.filter(coin => {
+      return myCryptoCodes.includes(coin.code.toLowerCase());
+    });
+
+
+    const mappedCurrencies = filteredCurrencies.map(coin => {
+      let customName = coin.name;
+      const codeLower = coin.code.toLowerCase();
+      
+     
+      if (codeLower === 'btc') customName = 'Bitcoin (BTC)';
+      else if (codeLower === 'eth') customName = 'Ethereum (ETH)';
+      else if (codeLower === 'ltc') customName = 'Litecoin (LTC)';
+      else if (codeLower === 'sol') customName = 'Solana (SOL)';
+      else if (codeLower === 'usdttrc20') customName = 'USDT (TRC20)';
+      else if (codeLower === 'usdtbsc') customName = 'USDT (BEP20)';
+      else if (codeLower === 'usdterc20') customName = 'USDT (ERC20)';
+      else if (codeLower === 'usdtmatic') customName = 'USDT (Polygon)';
+
+      return {
+        ...coin,
+        displayName: customName
+      };
+    });
+
+    
+    this.currenciesList = mappedCurrencies.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    
+    console.log('List:', this.currenciesList);
+  } catch (error) {
+    console.error("Error cargando monedas", error);
+  }
+},
   async handleAction() {
   if (!this.paymentData) {
-    // ESTADO 1: No hay factura, la generamos
+    
     await this.generateInvoice();
     //this.closeModal();
   } else {
-    // ESTADO 2: El QR ya existe, el usuario dice que ya pagó
+    
     this.notificationShow({ 
       type: "success", 
       message: "Checking your payment... This may take a few minutes." 
     });
     
-    // Cambiamos el texto del botón o el estado para dar feedback visual
+
     this.loading = true; // Activa el "Processing..."
     // Opcional: Cerramos el modal después de unos segundos
    /* setTimeout(() => {
@@ -262,19 +301,19 @@ export default {
         amount: this.amount,
         currency: this.currency,
       });
-
+      console.log('payment/create',response);
       // Guardamos la respuesta completa (incluye invoice_url)
       this.paymentData = response.data;
       console.log(' Guardamos la respuesta completa (incluye invoice_url)')
       this.loading = false;
       this.notificationShow({ 
       type: "success", 
-      message: "Your deposit request has been completed successfully!" 
+      message: "The QR code is displayed; deposit it at the indicated address." 
       })
       //this.modalsSetShow(null);
       
     } catch (error) {
-    // Si la API responde con un error de disponibilidad
+
     const errorMsg = error.response?.data?.message || "Failed to generate payment QR";
     
     if (errorMsg.includes("unavailable")) {
@@ -377,6 +416,42 @@ export default {
     margin-bottom: 15px;
     overflow: hidden;
     border-radius: 8px;
+
+    .network-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4f5b70;
+    letter-spacing: 0.5px;
+  }
+}
+
+.network-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #161533;
+  border: 1px solid #22224a;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  width: fit-content; 
+
+  .network-icon {
+    width: 20px !important;
+    height: 20px !important;
+    object-fit: contain; 
+    flex-shrink: 0; 
+  }
+}
+
   }
 
   .payment-instructions {

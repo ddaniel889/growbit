@@ -9,7 +9,7 @@
     <div class="element-section section-reward">
       <div class="section-title">Reward</div>
       <div class="section-content">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div class="content-value">
           <span>{{ adminFormatValue(promo.reward) }}</span>
         </div>
@@ -18,7 +18,7 @@
     <div class="element-section section-reward">
       <div class="section-title">MinWager</div>
       <div class="section-content">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div class="content-value">
           <span>{{ adminFormatValue(promo.minWager) }}</span>
         </div>

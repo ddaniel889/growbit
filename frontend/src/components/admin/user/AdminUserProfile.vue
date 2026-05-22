@@ -39,7 +39,7 @@
     <div class="stats-element">
       <span>Deposited</span>
       <div class="inner-amount">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div class="amount-value">
           {{ adminFormatValue(modalsData.user.stats.deposit) }}
         </div>
@@ -49,7 +49,7 @@
       <span>Withdrawn</span>
 
       <div class="inner-amount">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div class="amount-value">
           {{ adminFormatValue(modalsData.user.stats.withdraw) }}
         </div>
@@ -59,7 +59,7 @@
       <span>Wagered</span>
 
       <div class="inner-amount">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div class="amount-value">
           {{ adminFormatValue(modalsData.user.stats.bet) }}
         </div>
@@ -69,7 +69,7 @@
       <span>Won</span>
 
       <div class="inner-amount">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div class="amount-value">
           {{ adminFormatValue(modalsData.user.stats.won) }}
         </div>

@@ -30,7 +30,7 @@
     <div class="element-section section-amount">
       <div class="section-title">AMOUNT</div>
       <div class="section-content">
-        <img src="@/assets/images/mmo_coin.png" alt="icon" />
+        <img src="@/assets/images/sc_icon.png" alt="icon" />
         <div
           class="content-value"
           v-bind:class="{ 'value-positive': game.payout - adminGetAmount >= 0 }"

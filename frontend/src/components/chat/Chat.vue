@@ -305,7 +305,7 @@ export default {
               rank: "admin",
             },
             message:
-              "Welcome to 99wiwi Live Support! Start a chat by sending us a message, and one of our support specialists will assist you shortly.",
+              "Welcome to betsweeps Live Support! Start a chat by sending us a message, and one of our support specialists will assist you shortly.",
           });
         }
 

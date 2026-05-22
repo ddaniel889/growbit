@@ -154,7 +154,7 @@
               <td>
                 <div class="money">
                   {{ winner.prize?.toFixed(2) }}
-                  <img src="@/assets/images/mmo_coin.png" alt="" />
+                  <img src="@/assets/images/sc_icon.png" alt="" />
                 </div>
               </td>
             </tr>

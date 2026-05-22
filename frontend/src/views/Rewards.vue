@@ -273,6 +273,7 @@ export default {
       this.generalSendPromoClaimSocket({
         code: this.promocode,
       });
+      this.promocode = "";
     },
     openDaily() {
       this.$router.push("/cases/daily");
