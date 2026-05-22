@@ -14,7 +14,7 @@
           :click="() => claimRakeback(r.type, r.available)"
         >
           <div class="claim">
-            <Currency></Currency>
+            <Currency currency="sc"></Currency>
             <span>{{
               getDisplayCurrencyAmountFormatted(r.available ? r.available : 0.0)
             }}</span>
