@@ -11,6 +11,7 @@ const slideGameSchema = new mongoose.Schema(
     state: { type: String },
     updatedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
+    currency: { type: String, enum: ["sc", "gc"], default: "sc" }
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } },
 );

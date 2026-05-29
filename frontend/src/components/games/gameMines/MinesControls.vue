@@ -280,14 +280,25 @@ export default {
       this.validateMinesAmount();
       this.validateMinesAmountGridChange();
     },
-    getBalanceInSelectedCurrency(balance) {
-      return (
-        this.fiatRates.data[this.selectedCurrency] * balance
-      ).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    },
+ getBalanceInSelectedCurrency(balance) {
+  // 1. Forzar que el balance sea un número válido. Si no lo es, por defecto es 0.
+  const cleanBalance = Number(balance) || 0;
+
+  // 2. Obtener la tasa de cambio de forma segura. 
+  // Si no existen los datos o la moneda seleccionada, usamos 1 como fallback (sin conversión).
+  const rate = (this.fiatRates && this.fiatRates.data && this.fiatRates.data[this.selectedCurrency]) 
+    ? Number(this.fiatRates.data[this.selectedCurrency]) 
+    : 1;
+
+  // 3. Realizar el cálculo final de forma segura
+  const total = rate * cleanBalance;
+
+  // 4. Retornar el string formateado (si por un caso extremo total sigue siendo NaN, pintará "0.00")
+  return (isNaN(total) ? 0 : total).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+},
     minesSetMode(mode) {
       if (mode === "manual") {
         this.autoInfinite = false;
@@ -318,7 +329,7 @@ export default {
 
       this.play();
     },
-    async play() {
+   async play() {
       if (this.authUser.user === null) {
         this.notificationShow({
           type: "error",
@@ -392,13 +403,22 @@ export default {
         return;
       }
 
+      // NUEVO: Obtener la moneda activa seleccionada por el usuario en minúsculas ('sc' o 'gc')
+      const currentCurrency = this.selectedCurrency ? this.selectedCurrency.toLowerCase() : "sc";
+      console.log('this.minesGridSize')
+      console.log(this.minesGridSize)
+
       if (this.mode === "auto" && this.minesAutoActive) {
+        console.log('hola auto')
         const data = {
           amount: dlsAmount,
           minesGridSize: this.minesGridSize,
           minesCount: minesCount,
           tiles: this.minesSelected,
+          currency: currentCurrency, // NUEVO: Se envía al socket de Autobet
         };
+        console.log('DATA DE MINE')
+        console.log(data)
         let last = this.countAuto === 0 && !this.autoInfinite;
         //console.log("last");
         if (this.countAuto > 0 || this.autoInfinite) {
@@ -426,11 +446,15 @@ export default {
           //log("Mines game cleared " + this.minesGame);
         }
       } else {
+          console.log('hola manual')
         const data = {
           amount: dlsAmount,
           minesCount: minesCount,
           minesGridSize: this.minesGridSize,
+          currency: currentCurrency, 
         };
+        console.log('data this.minesGridSize2')
+        console.log(data)
         this.minesSendBetSocket(data);
       }
     },
@@ -438,7 +462,7 @@ export default {
       const data = {};
       this.minesSendCashoutSocket(data);
     },
-  },
+  } ,
   computed: {
     ...mapGetters([
       "socketSendLoading",
@@ -462,10 +486,29 @@ export default {
       return this.gameConfig.minesMaxBet;
     },
     minesGetCashoutAmount() {
-      return (
+    /*  return (
         this.minesGame.amount *
         minesGetCurrentMultiplier(this.minesGame, this.gameConfig.minesEdge)
-      );
+      );*/
+      // 1. Validación de seguridad básica: si no hay juego activo, el cashout es 0
+  if (!this.minesGame) return 0;
+
+  // 2. Forzar que el monto sea un número válido (si viene undefined o string, cae a 0)
+  const betAmount = Number(this.minesGame.amount) || 0;
+
+  // 3. Ejecutar la función del multiplicador de forma segura
+  let multiplier = 0;
+  try {
+    multiplier = minesGetCurrentMultiplier(this.minesGame, this.gameConfig.minesEdge);
+  } catch (e) {
+    console.error("Error al calcular el multiplicador de Minas:", e);
+  }
+
+  // 4. Calcular el total de retiro
+  const cashoutTotal = betAmount * (Number(multiplier) || 0);
+
+  // 5. El filtro definitivo: si por alguna razón matemática da NaN, devolvemos 0
+  return isNaN(cashoutTotal) ? 0 : cashoutTotal;
     },
   },
   beforeDestroy() {

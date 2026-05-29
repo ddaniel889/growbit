@@ -77,8 +77,10 @@ function determineRollSuccess(roll, mode, targetNumber, targetNumberEnd) {
  * @param {number} target - target
  * @param {number} betAmount - betAmount
  * @param io
+ * @param {string} currency - Moneda seleccionada por el usuario ('sc' o 'gc')
  */
-const play = async (user, target, target2, mode, betAmount, io) => {
+// MODIFICADO: Ahora el método acepta la variable 'currency' al final
+const play = async (user, target, target2, mode, betAmount, io, currency = "sc") => {
   let seed = await UserSeed.findOne({
     user: user._id,
     state: "active",
@@ -132,12 +134,14 @@ const play = async (user, target, target2, mode, betAmount, io) => {
   const payout = betAmount * multiplier;
 
   const promises = [
+    // MODIFICADO: Enviamos 'currency' a updateUser para que sepa qué subcuenta balancear en MongoDB
     updateUser(
       payout,
       (multiplier - 1) * betAmount,
       betAmount,
       DICE_HOUSE_EDGE,
       user,
+      currency 
     ),
     updateNonce(seed._id),
     QuickGame.create({
@@ -151,6 +155,8 @@ const play = async (user, target, target2, mode, betAmount, io) => {
         seed: seed._id,
       },
       user: user._id,
+      // RECOMENDADO: Guardamos la moneda del juego en el registro de QuickGame para auditorías futuras
+      currency: currency 
     }),
   ];
 

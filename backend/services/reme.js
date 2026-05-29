@@ -55,34 +55,38 @@ function getMultiplier(rolls) {
   if (host1 === 0) {
     return 0;
   } else if (player1 === 0) {
-    //3x
     return 3;
   } else if (host1 >= player1) {
     return 0;
-    //Host wins
   } else if (player1 > host1) {
-    //Player wins
     return 2;
   }
 }
 
 /**
- * @param {any} user - user
- * @param {number} betAmount - betAmount
+ * @param {any} user 
+ * @param {number} betAmount 
  * @param io
+ * @param {boolean} autobet
+ * @param {string} currency 
  */
-const play = async (user, betAmount, io, autobet) => {
+const play = async (user, betAmount, io, autobet, currency = "sc") => {
   let seed = await UserSeed.findOne({
     user: user._id,
     state: "active",
   }).select("seedClient seedServer nonce hash user state");
 
+
+  const updatedWallet = { ...user.wallet };
+  updatedWallet[currency] = (updatedWallet[currency] || 0) - betAmount;
+
   const wageredUser = {
     ...user,
-    balance: user.balance - betAmount,
+    wallet: updatedWallet, 
     updatedAt: new Date().toISOString(),
   };
 
+ 
   io.of("/general").to(user._id.toString()).emit("user", { user: wageredUser });
 
   let rolls = getRolls(seed);
@@ -93,6 +97,7 @@ const play = async (user, betAmount, io, autobet) => {
 
   const payout = betAmount * multiplier;
 
+
   const promises = [
     updateUser(
       payout,
@@ -100,6 +105,7 @@ const play = async (user, betAmount, io, autobet) => {
       betAmount,
       REME_HOUSE_EDGE,
       user,
+      currency, 
     ),
     updateNonce(seed._id),
     QuickGame.create({
@@ -107,6 +113,7 @@ const play = async (user, betAmount, io, autobet) => {
       amount: betAmount,
       payout: payout,
       multiplier: multiplier,
+      currency: currency,
       data: { rolls },
       fair: {
         nonce: seed.nonce,
@@ -118,8 +125,11 @@ const play = async (user, betAmount, io, autobet) => {
 
   const [updatedUser, nonce, game] = await Promise.all(promises);
 
+  // NOTA: Si tus utilitarios de afiliados o reportes requieren la moneda, 
+  // puedes inyectarle el parámetro 'currency' al final de la misma forma.
   updateAffiliate(user, betAmount, REME_HOUSE_EDGE);
   updateReports(user, betAmount, payout, "reme");
+  
   if (multiplier > 0) {
     tryToClaim(user, betAmount, "reme", multiplier, io);
   }

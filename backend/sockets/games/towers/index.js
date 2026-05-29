@@ -92,7 +92,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                "username avatar rank  local.emailVerified balance xp stats limits affiliates anonymous mute ban createdAt",
+                "username avatar rank  local.emailVerified balance wallet xp stats limits affiliates anonymous mute ban createdAt",
               )
               .lean();
             socketCheckUserData(user, true);
@@ -125,7 +125,7 @@ module.exports = (io) => {
           towersValidateAutobet(data);
           const user = await User.findById(socket.decoded._id)
             .select(
-              "username avatar rank  local.emailVerified balance xp stats limits affiliates anonymous mute ban createdAt",
+              "username avatar rank  local.emailVerified balance wallet xp stats limits affiliates anonymous mute ban createdAt",
             )
             .lean();
 
@@ -154,7 +154,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                "username avatar rank  local.emailVerified balance xp stats limits affiliates anonymous mute ban createdAt",
+                "username avatar rank  local.emailVerified balance wallet xp stats limits affiliates anonymous mute ban createdAt",
               )
               .lean();
             socketCheckUserData(user, true);
@@ -184,7 +184,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                "username avatar rank  local.emailVerified balance xp stats limits affiliates anonymous mute ban createdAt",
+                "username avatar rank  local.emailVerified balance wallet xp stats limits affiliates anonymous mute ban createdAt",
               )
               .lean();
             socketCheckUserData(user, true);

@@ -37,20 +37,22 @@ module.exports = (io) => {
         const picks = req.body.picks;
         const betAmount = +req.body.amount;
         const mode = req.body.mode;
+        const currency = req.body.currency || "sc"; // Capturamos la divisa activa
 
-        validateParams(betAmount, picks);
+        validateParams(betAmount, picks, currency);
 
         const user = await User.findById(req.user._id)
           .select(
-            "rank balance local.emailVerified stats limits fair username mute ban affiliates",
+            "rank balance wallet local.emailVerified stats limits fair username mute ban affiliates",
           )
           .lean();
 
         checkVerified(user);
 
-        checkBalance(user, betAmount);
+        // Validamos el saldo dinámicamente según la moneda elegida
+        checkBalance(user, betAmount, currency);
 
-        const { numbers } = await play(user, picks, betAmount, mode, io);
+        const { numbers } = await play(user, picks, betAmount, mode, io, currency);
 
         await socketRemoveAntiSpam(userId);
         res.status(200).json({ success: true, numbers: numbers });
@@ -67,20 +69,20 @@ module.exports = (io) => {
   return router;
 };
 
-function validateParams(amount, picks) {
+function validateParams(amount, picks, currency) {
   if (!amount || isNaN(amount)) {
     throw new Error("Invalid Amount");
   }
 
   if (amount < KENO_MIN_AMOUNT) {
     throw new Error(
-      `You need to bet at least ${parseFloat(KENO_MIN_AMOUNT).toFixed(2)} DLS.`,
+      `You need to bet at least ${parseFloat(KENO_MIN_AMOUNT).toFixed(2)} ${currency.toUpperCase()}.`,
     );
   }
 
   if (amount > KENO_MAX_AMOUNT) {
     throw new Error(
-      `You can bet max ${parseFloat(KENO_MAX_AMOUNT).toFixed(2)} DLS.`,
+      `You can bet max ${parseFloat(KENO_MAX_AMOUNT).toFixed(2)} ${currency.toUpperCase()}.`,
     );
   }
 
@@ -92,10 +94,14 @@ function validateParams(amount, picks) {
   }
 }
 
-function checkBalance(user, betAmount) {
+function checkBalance(user, betAmount, currency) {
   if (!user) {
     throw new Error("Something went wrong. Please try again in a few seconds.");
-  } else if (user.balance < betAmount) {
+  }
+  
+  // Verificación dinámica bimoneda
+  const userWalletBalance = user.wallet ? user.wallet[currency.toLowerCase()] : user.balance;
+  if (userWalletBalance < betAmount) {
     throw new Error("You have not enough balance for this action.");
   }
 }

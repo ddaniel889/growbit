@@ -88,7 +88,7 @@ import Ball from "@/components/games/gamePlinko/game/ball/Ball.vue";
 import { getPlinkoPayoutForEdge } from "@/utils";
 
 export default {
-  name: "PlinkoGame",
+  name: "PlinkoGame",//
   props: ["risk"],
   components: {
     Ball,

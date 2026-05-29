@@ -1,5 +1,4 @@
 const User = require("../../../database/models/User");
-
 const BalanceTransaction = require("../../../database/models/BalanceTransaction");
 
 // Load utils
@@ -22,7 +21,7 @@ const generalSendRakebackClaimSocket = async (
     const rakebackType = data.rakebackType;
 
     if (!RAKEBACK_TYPES.includes(rakebackType)) {
-      callback({
+      return callback({
         success: false,
         error: { type: "error", message: "Invalid Rakeback Type" },
       });
@@ -31,19 +30,19 @@ const generalSendRakebackClaimSocket = async (
     const rakebackData = user.rakeback[rakebackType];
 
     if (rakebackData.available < MIN_CLAIM) {
-      throw new Error(`You can't claim less than ${MIN_CLAIM} DLS`);
+      // CAMBIADO: Mensaje adaptado para expresar la moneda dorada GC
+      throw new Error(`You can't claim less than ${MIN_CLAIM} GC`);
     }
 
     generalCheckSendRakebackClaimUser(rakebackData, rakebackType);
-
-    //TODO : lock collection, eventho it's maybe not needed because of antiSpam filter
 
     // Update user balance and reset available rakeback
     const dataDatabase = await Promise.all([
       User.findByIdAndUpdate(
         user._id,
         {
-          $inc: { "wallet.sc": rakebackData.available }, //  $inc: { balance: rakebackData.available }
+          // CAMBIADO: Se modificó "wallet.sc" a "wallet.gc" para acreditar la moneda dorada gratuita
+          $inc: { "wallet.gc": rakebackData.available }, 
           [`rakeback.${rakebackType}.available`]: 0,
           [`rakeback.${rakebackType}.lastClaimed`]: new Date(),
         },
@@ -54,6 +53,9 @@ const generalSendRakebackClaimSocket = async (
         type: `${rakebackType}RakebackClaim`,
         user: user._id,
         state: "completed",
+        currency: "gc" 
+        // OPCIONAL/RECOMENDADO: Si tu modelo BalanceTransaction soporta especificar la moneda, 
+        // puedes añadir currency: "gc" aquí si lo consideras necesario para tus auditorías.
       }),
     ]);
 

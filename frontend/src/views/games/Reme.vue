@@ -218,7 +218,7 @@ export default {
 
       const dlsAmount = this.getDlsAmountForBetting(amount);
 
-      if (dlsAmount > this.maxBet) {
+      if (dlsAmount > this.maxBet) {//
         this.notificationShow({
           type: "error",
           message: "Max bet exceeded!",
@@ -232,10 +232,14 @@ export default {
 
       this.animationInProgress = true;
 
+    
+      const currentCurrency = this.selectedCurrency ? this.selectedCurrency.toLowerCase() : "sc";
+
       await axios
         .post("reme/roll", {
-          amount: dlsAmount,
-          autobet: this.autoActive,
+         amount: dlsAmount,          
+         currency: currentCurrency,  
+         autobet: this.autoActive,
         })
         .then(({ data }) => {
           if (this.mode == "auto") {

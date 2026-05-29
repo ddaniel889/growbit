@@ -30,13 +30,30 @@ const { tryToClaim } = require("../challenges");
 const { logger } = require("../../utils/logger");
 
 const NUMBER_OF_SLIDE_SEEDS = 1000;
-// Game slide variables
+
+// Game slide variables globales
 let slideGame = null;
 let slideBets = [];
 let slideHistory = [];
 let slideBetPendingCount = 0;
 
 const slideGetDataSocket = async (io, socket, user, data, callback) => {
+  // Solución al contador congelado: Si el juego está en null, devolvemos marcas de tiempo válidas
+  if (!slideGame) {
+    const now = new Date().getTime();
+    return {
+      game: {
+        state: "created", 
+        history: slideHistory,
+        bets: [],
+        createdAt: now,
+        updatedAt: now
+      },
+      bets: [],
+      history: slideHistory,
+    };
+  }
+
   return {
     game: slideSanitizeGame(slideGame),
     bets: slideSanitizeBets(slideBets),
@@ -46,43 +63,53 @@ const slideGetDataSocket = async (io, socket, user, data, callback) => {
 
 const slideSendBetSocket = async (io, socket, user, data, callback) => {
   try {
-    // Validate sent data
+    if (!slideGame) {
+      return callback({
+        success: false,
+        error: { type: "error", message: "El juego se está inicializando, por favor espera un momento." },
+      });
+    }
+
+    // Aseguramos que el payload contenga la moneda antes de validar
+    data.currency = data.currency ? data.currency.toLowerCase() : 'sc';
+
     slideCheckSendBetData(data);
-
-    // Validate if user has enougth balance
     slideCheckSendBetUser(data, user, slideBets);
-
-    // Validate if betting is allowed for current game
     slideCheckSendBetGame(slideGame);
 
     try {
-      // Increase slide bet pending count by 1
       slideBetPendingCount = slideBetPendingCount + 1;
 
-      // Get user bet amount
       const amount = data.amount;
+      const currencyKey = data.currency;
 
-      // Create database query promises array
       let promises = [];
 
-      // Add update users data, report, site rain and referred user if available and create roll bet queries to promises array
+      // Descontar del balance bimoneda dinámico
       promises = [
-        updateUser(0, -amount, amount, 0, user),
+        User.findByIdAndUpdate(
+          user._id,
+          {
+            $inc: {
+              [`wallet.${currencyKey}`]: -amount,
+              "stats.total.bet": amount,
+              "stats.slide.bet": amount,
+            },
+          },
+          { new: true }
+        ).lean(),
         SlideBet.create({
           amount: amount,
           color: data.color,
+          currency: currencyKey, 
           game: slideGame._id,
           user: user._id,
         }),
       ];
 
-      // Execute promise queries in database
       let dataDatabase = await Promise.all(promises);
-
-      // Convert bet object to json object
       dataDatabase[1] = dataDatabase[1].toObject();
 
-      // Add user properties to bet object
       dataDatabase[1].user = {
         _id: user._id,
         username: user.username,
@@ -93,19 +120,20 @@ const slideSendBetSocket = async (io, socket, user, data, callback) => {
         anonymous: user.anonymous,
       };
 
-      // Add slide bet to slide bets array
       slideBets.push(dataDatabase[1]);
 
-      // Send slide bet to frontend
-      io.of("/slide").emit("bet", {
+      // Emitir la apuesta en tiempo real a la sala
+      io.of("/slide").to("slide").emit("bet", {
         bet: slideSanitizeBet(dataDatabase[1]),
       });
 
+      // Retornar éxito al usuario con su billetera actualizada para refrescar el Navbar
       callback({ success: true, user: dataDatabase[0] });
 
-      // Decrease slide bet pending count by 1
-      slideBetPendingCount = slideBetPendingCount - 1;
+      // Notificación inmediata del descuento al canal privado del usuario
+      io.of("/general").to(user._id.toString()).emit("user", { user: dataDatabase[0] });
 
+      slideBetPendingCount = slideBetPendingCount - 1;
       socketRemoveAntiSpam(user._id);
     } catch (err) {
       slideBetPendingCount = slideBetPendingCount - 1;
@@ -126,88 +154,79 @@ const slideSendBetSocket = async (io, socket, user, data, callback) => {
 
 const slideGameStart = async (io) => {
   try {
-    // Generate new slide game
     slideGame = await slideGenerateGame();
-
-    // Clear slide bets array
     slideBets = [];
 
-    // Send sanitized slide game object to frontend
-    io.of("/slide").emit("game", {
+    io.of("/slide").to("slide").emit("game", {
       game: slideSanitizeGame(slideGame),
     });
+
+    // Forzar un tiempo de espera estricto y limpio de 13 segundos reales para evitar bloqueos por desfase horarió
+    const duration = 13000; 
 
     setTimeout(
       () => {
         slideGamePending(io);
       },
-      1000 * 13 -
-        (new Date().getTime() - new Date(slideGame.createdAt).getTime()),
+      duration
     );
   } catch (err) {
-    setTimeout(() => slideInit(io), 2000);
-    logger.error(err);
+    logger.error("Error al arrancar la ronda en slideGameStart, reintentando en 2s...", err);
+    setTimeout(() => slideGameStart(io), 2000);
   }
 };
 
 const slideGamePending = async (io) => {
   try {
-    if (slideGame.state !== "pending") {
-      // Update slide game state
-      slideGame.state = "pending";
+    if (!slideGame) return setTimeout(() => slideGameStart(io), 1000);
 
-      // Send sanitized slide game object to frontend
-      io.of("/slide").emit("game", {
+    if (slideGame.state !== "pending") {
+      slideGame.state = "pending";
+      slideGame.updatedAt = new Date().getTime();
+
+      io.of("/slide").to("slide").emit("game", {
         game: slideSanitizeGame(slideGame),
       });
     }
 
-    // Check for pending bets
     if (slideBetPendingCount <= 0) {
       slideGameFairness(io);
     } else {
       setTimeout(() => {
         slideGamePending(io);
-      }, 1000);
+      }, 500);
     }
   } catch (err) {
     logger.error(err);
+    setTimeout(() => slideGamePending(io), 1000);
   }
 };
 
 const slideGameFairness = async (io) => {
   try {
-    // Update slide game state
+    if (!slideGame) return setTimeout(() => slideGameStart(io), 1000);
+
     slideGame.state = "fairness";
+    slideGame.updatedAt = new Date().getTime();
 
     if (!slideGame.fair.blockNum) {
-      // Get fair data from eos provider
       const fairData = await fairGetData();
-
-      // Add block num to slide game object
       slideGame.fair.blockNum = fairData.data.head_block_num + 1;
 
-      // Send sanitized slide game object to frontend
-      io.of("/slide").emit("game", {
+      io.of("/slide").to("slide").emit("game", {
         game: slideSanitizeGame(slideGame),
       });
     }
 
-    // Get fair block data from eos provider
     const fairBlockData = await fairGetBlockData(slideGame.fair.blockNum);
-
-    // Add public seed to slide game object
     slideGame.fair.seedPublic = fairBlockData.data.id;
 
-    // Get slide outcome for this game
     slideGame.outcome = slideGetOutcome(slideGame);
 
-    // Set slide game state to rolling
     slideGame.state = "rolling";
     slideGame.updatedAt = new Date().getTime();
 
-    // Send slide game to frontend
-    io.of("/slide").emit("game", {
+    io.of("/slide").to("slide").emit("game", {
       game: slideSanitizeGame(slideGame),
     });
 
@@ -215,33 +234,31 @@ const slideGameFairness = async (io) => {
       slideGameComplete(io);
     }, 5500);
   } catch (err) {
+    logger.error("Error en Slide Provably Fair, reintentando fase en 2s...", err);
     setTimeout(() => {
       slideGameFairness(io);
-    }, 1000 * 2);
+    }, 2000);
   }
 };
 
 const slideGameComplete = async (io) => {
   try {
-    // Update slide game state
+    if (!slideGame) return setTimeout(() => slideGameStart(io), 1000);
+
     slideGame.state = "completed";
 
-    // Create promises arrays
     let promisesUsers = [];
     let promisesBets = [];
-
-    // Create reports stats variables
     let amountBetTotal = 0;
     let amountPayoutTotal = 0;
 
     const { winningColour, winningMultiplier } = getWinningColour(
       slideGame.outcome,
     );
+    
     for (let bet of slideBets) {
-      // Create bet payout variable
       let amountPayout = 0;
 
-      // Set bet payout amount
       if (winningColour === bet.color) {
         let multiplier = limitMultiplier(
           bet.amount,
@@ -262,15 +279,25 @@ const slideGameComplete = async (io) => {
         tryToClaim(bet.user, bet.amount, "slide", bet.multiplier, io);
       }
 
-      promisesUsers.push(
-        updateUser(
-          amountPayout,
-          amountPayout,
-          bet.amount,
-          SLIDE_HOUSE_EDGE,
-          bet.user,
-        ),
-      );
+      const currencyKey = bet.currency ? bet.currency.toLowerCase() : 'sc';
+
+      if (amountPayout > 0) {
+        promisesUsers.push(
+          User.findByIdAndUpdate(
+            bet.user._id,
+            {
+              $inc: {
+                [`wallet.${currencyKey}`]: amountPayout,
+                "stats.total.won": amountPayout,
+                "stats.slide.won": amountPayout,
+              }
+            },
+            { new: true }
+          ).lean()
+        );
+      } else {
+        promisesUsers.push(User.findById(bet.user._id).lean());
+      }
 
       promisesBets.push(
         SlideBet.findByIdAndUpdate(
@@ -282,18 +309,17 @@ const slideGameComplete = async (io) => {
           },
           { new: true },
         )
-          .select("amount payout user updatedAt createdAt multiplier")
+          .select("amount payout user currency updatedAt createdAt multiplier")
           .populate({
             path: "user",
-            select:
-              " username avatar rank xp stats rakeback anonymous createdAt",
+            select: "username avatar rank xp stats rakeback anonymous wallet createdAt",
           })
           .lean(),
       );
     }
 
     updateReports({ rank: "user" }, amountBetTotal, amountPayoutTotal, "slide");
-    // Execute update game, user and bet queries
+    
     const dataDatabase = await Promise.all([
       SlideGame.findByIdAndUpdate(
         slideGame._id,
@@ -311,23 +337,29 @@ const slideGameComplete = async (io) => {
       ...promisesBets,
     ]);
 
-    // Add updated slide game object to slide history and remove last element from slide history if its longer then 100
-    slideHistory.unshift(dataDatabase[0]);
+    // Sanitización de historial con tiempos unificados
+    if (dataDatabase[0]) {
+      dataDatabase[0].createdAt = new Date(dataDatabase[0].createdAt).getTime();
+      slideHistory.unshift(dataDatabase[0]);
+    }
+    
     if (slideHistory.length > 100) {
       slideHistory.pop();
     }
 
-    dataDatabase[0].fair = slideGame.fair; //Add fairness to object
-    // Send full slide game object to frontend
-    io.of("/slide").emit("game", { game: slideSanitizeGame(dataDatabase[0]) });
+    dataDatabase[0].fair = slideGame.fair; 
+    
+    io.of("/slide").to("slide").emit("game", { game: slideSanitizeGame(dataDatabase[0]) });
 
-    // Send updated users to frontend
+    // Acreditación de saldo en vivo para ganadores y perdedores
     for (const user of dataDatabase.slice(1, promisesUsers.length + 1)) {
-      io.of("/general").to(user._id.toString()).emit("user", { user: user });
+      if(user && user._id) {
+        io.of("/general").to(user._id.toString()).emit("user", { user: user });
+      }
     }
 
-    // Add updated bets to bet list
     for (const bet of dataDatabase.slice(promisesUsers.length + 1)) {
+      if (!bet) continue;
       bet.game = dataDatabase[0];
       bet.game.fair = slideGame.fair;
 
@@ -341,28 +373,26 @@ const slideGameComplete = async (io) => {
       );
     }
 
-    // Start slide game after 3s cooldown
     setTimeout(() => {
       slideGameStart(io);
     }, 1000 * 3);
   } catch (err) {
-    setTimeout(() => slideInit(io), 2000);
-    logger.error(err);
+    logger.error("Error en completado de Slide, reintentando bucle...", err);
+    setTimeout(() => slideGameStart(io), 2000);
   }
 };
 
 const slideInit = async (io) => {
   try {
-    // Get last slide game and last 100 completed slide games from database
     let [lastGame, completedGames] = await Promise.all([
       SlideGame.findOne({})
         .sort({ createdAt: -1 })
-        .select("fair state createdAt")
+        .select("fair state createdAt gameIndex bets")
         .populate({
           path: "fair.seed",
           select: "seedServer index previousHash",
         })
-        .populate({ path: "bets", select: "amount payout game user" })
+        .populate({ path: "bets", select: "amount payout game user currency" })
         .lean(),
       SlideGame.find({ state: "completed" })
         .sort({ createdAt: -1 })
@@ -371,17 +401,18 @@ const slideInit = async (io) => {
         .lean(),
     ]);
 
-    // Add history games to slide history variable
-    slideHistory = completedGames;
+    slideHistory = completedGames.map(game => ({
+      ...game,
+      createdAt: new Date(game.createdAt).getTime()
+    })) || [];
 
-    // Handle last game if uncompleted
-    if (lastGame && lastGame?.state !== "completed") {
-      // Create promise array
+    if (lastGame && lastGame.state !== "completed" && Array.isArray(lastGame.bets)) {
       let promises = [];
 
-      // Add roll bet update querys and user update querys to promise array
       for (const bet of lastGame.bets) {
-        if (bet.payout === undefined) {
+        if (bet && bet.payout === undefined) {
+          const currencyKey = bet.currency ? bet.currency.toLowerCase() : 'sc';
+
           promises = [
             ...promises,
             SlideBet.findByIdAndUpdate(bet._id, {
@@ -390,7 +421,7 @@ const slideInit = async (io) => {
             }),
             User.findByIdAndUpdate(bet.user, {
               $inc: {
-                balance: bet.amount,
+                [`wallet.${currencyKey}`]: bet.amount, 
                 "stats.total.bet": -bet.amount,
                 "stats.slide.bet": -bet.amount,
               },
@@ -400,10 +431,8 @@ const slideInit = async (io) => {
         }
       }
 
-      // Get slide outcome for this game
       lastGame.outcome = slideGetOutcome(lastGame);
 
-      // Execute update roll game query, roll bet querys and user querys in database
       let dataDatabase = await Promise.all([
         SlideGame.findByIdAndUpdate(
           lastGame._id,
@@ -419,49 +448,47 @@ const slideInit = async (io) => {
         ...promises,
       ]);
 
-      // Add updated slide game object to slide history and remove last element from slide history if its longer then 100
-      slideHistory.unshift(dataDatabase[0]);
-      if (slideHistory.length > 100) {
-        slideHistory.pop();
+      if (dataDatabase[0]) {
+        dataDatabase[0].createdAt = new Date(dataDatabase[0].createdAt).getTime();
+        slideHistory.unshift(dataDatabase[0]);
+        if (slideHistory.length > 100) {
+          slideHistory.pop();
+        }
       }
     }
 
-    // Start slide game
     slideGameStart(io);
   } catch (err) {
-    setTimeout(() => slideInit(io), 2000);
-    logger.error(err);
+    logger.error("Error crítico en slideInit, reintentando inicialización completa...", err);
+    setTimeout(() => slideInit(io), 3000);
   }
 };
 
 const slideGetOutcome = (slideGame) => {
+  if (!slideGame || !slideGame.fair || !slideGame.fair.seed) return 0;
   const combined = `${slideGame.fair.seed.seedServer}-${slideGame.fair.seedPublic}`;
   const hash = crypto.createHash("sha256").update(combined).digest("hex");
   return Math.abs(parseInt(hash.substr(0, 8), 16)) % 15;
 };
 
 const slideGenerateGame = async () => {
-  const prevGame = slideGame;
+  const lastGameDb = await SlideGame.findOne({}).sort({ createdAt: -1 }).lean();
 
-  let gameIndex;
-  if (prevGame?.gameIndex === 0) {
-    gameIndex = 1;
-  } else if (!prevGame?.gameIndex) {
-    gameIndex = 0;
-  } else {
-    gameIndex = prevGame?.gameIndex + 1;
+  let gameIndex = 0;
+  if (lastGameDb && typeof lastGameDb.gameIndex === "number") {
+    gameIndex = lastGameDb.gameIndex + 1;
   }
 
-  const seedIndex = NUMBER_OF_SLIDE_SEEDS - 1 - gameIndex;
-
+  const seedIndex = NUMBER_OF_SLIDE_SEEDS - 1 - (gameIndex % NUMBER_OF_SLIDE_SEEDS);
   let seed = await SlideSeed.findOne({ index: seedIndex }).lean();
 
   if (!seed) {
-    logger.error("Slide seed error!");
-    throw new Error("Slide seed error!");
+    seed = await SlideSeed.findOne({}).lean();
+    if (!seed) {
+      throw new Error("No se encontraron registros de semillas en la colección 'SlideSeed'.");
+    }
   }
 
-  // Create slide game in database
   let gameDatabase = await SlideGame.create({
     gameIndex: gameIndex,
     fair: {
@@ -470,10 +497,12 @@ const slideGenerateGame = async () => {
     state: "created",
   });
 
-  // Convert game object to json object
   const gameObject = gameDatabase.toObject();
-
   gameObject.fair = { seed: seed };
+
+  // Forzar que el objeto local tenga marcas de tiempo numéricas uniformes
+  gameObject.createdAt = new Date(gameObject.createdAt).getTime();
+  gameObject.updatedAt = new Date(gameObject.updatedAt).getTime();
 
   return gameObject;
 };

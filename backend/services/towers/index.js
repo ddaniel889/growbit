@@ -23,7 +23,7 @@ const {
   checkIfGameInProgress,
 } = require("../../utils/games/towers");
 const {
-  generalUserGetRakeback,
+  generalUserGetRakeback,//
   generalUserGetFormated,
   generalSanitizeUserSeed,
 } = require("../../utils/general/user");
@@ -62,6 +62,7 @@ const towersSendBetSocket = async (io, socket, user, data, callback) => {
     towersCheckSendBetData(data);
 
     // Validate user
+  
     towersCheckSendBetUser(data, user);
 
     // Get users towers game
@@ -84,6 +85,7 @@ const towersSendBetSocket = async (io, socket, user, data, callback) => {
 
     // Get user bet amount
     const amount = data.amount;
+    const currency = data.currency || "sc"; // Capturamos la moneda
 
     // Combine nonce, server seed and client seed to one string
     const combined = `${seedDatabase.seedServer}-${seedDatabase.nonce}-${seedDatabase.seedClient}`;
@@ -99,10 +101,11 @@ const towersSendBetSocket = async (io, socket, user, data, callback) => {
 
     // Add update users data, rain, referred user and create roll bet queries to promises array
     promises = [
-      updateUser(0, -amount, amount, TOWERS_HOUSE_EDGE, user),
+      updateUser(0, -amount, amount, TOWERS_HOUSE_EDGE, user,currency),
       updateNonce(seedDatabase._id),
       TowersGame.create({
         amount: amount,
+        currency: currency,
         risk: data.risk,
         deck: deck,
         fair: {
@@ -316,7 +319,7 @@ const towersSendRevealSocket = async (io, socket, user, data, callback) => {
       const multiplier = amountPayout / towersGame.amount;
 
       const [updatedUser, updatedGame] = await Promise.all([
-        updateUser(amountPayout, amountPayout, 0, null, user),
+        updateUser(amountPayout, amountPayout, 0, null, user,towersGame.currency),
         TowersGame.findByIdAndUpdate(
           towersGame._id,
           {
@@ -418,7 +421,7 @@ const towersSendCashoutSocket = async (io, socket, user, data, callback) => {
     const multiplier = amountPayout / towersGame.amount;
 
     let dataDatabase = await Promise.all([
-      updateUser(amountPayout, amountPayout, 0, 0, user),
+      updateUser(amountPayout, amountPayout, 0, 0, user,towersGame.currency),
       TowersGame.findByIdAndUpdate(
         towersGame._id,
         {

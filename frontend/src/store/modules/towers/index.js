@@ -71,6 +71,13 @@ const actions = {
     getters.socketTowers.emit("sendBet", data, (res) => {
       if (res.success === true) {
         commit("auth_update_user", res.user);
+        // Sobrescribimos el amount de la respuesta con el valor visual de la moneda nativa
+      // si es que el backend retorna el valor crudo en USD.
+      /*if (res.game && rootGetters.selectedCurrency) {
+        const currentCurrency = data.currency; // 'sc' o 'gc'
+        // Si el backend no devuelve el 'amount' nativo, lo sincronizamos aquí:
+        res.game.amount = Number(getters.betAmount); 
+      }*/
         commit("towers_set_game", res.game);
       } else {
         dispatch("notificationShow", res.error);

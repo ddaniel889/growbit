@@ -140,7 +140,7 @@ export default {
             },
             {
               Q: "Who do I contact for further assistance?",
-              A: "For any additional questions or support, you can reach out to us via email at admin@99wiwi.net. Our team will be happy to assist you.",
+              A: "For any additional questions or support, you can reach out to us via email at Betsweeps. Our team will be happy to assist you.",
               open: false,
             },
           ],

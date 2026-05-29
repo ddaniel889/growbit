@@ -1,4 +1,5 @@
 const PLINKO_MIN_AMOUNT = process.env.PLINKO_MIN_AMOUNT || 0.01;
+
 const plinkoValidateRequest = (data) => {
   if (data === undefined || data === null) {
     throw new Error("Something went wrong. Please try again in a few seconds.");
@@ -25,16 +26,28 @@ const plinkoValidateRequest = (data) => {
   ) {
     throw new Error("Your entered risk is invalid.");
   } else if (data.amount < PLINKO_MIN_AMOUNT) {
-    throw new Error(
-      `You need to bet at least ${parseFloat(PLINKO_MIN_AMOUNT).toFixed(2)} DLS.`,
+    throw new Error
+     ( `You need to bet at least ${parseFloat(PLINKO_MIN_AMOUNT).toFixed(2)} DLS.`,
     );
   }
 };
 
+// CORREGIDO: Ahora extrae y valida dinámicamente según la moneda enviada ('sc' o 'gc')
 const plinkoCheckSendCreateUser = (data, user) => {
   if (data === undefined || user === undefined) {
     throw new Error("Something went wrong. Please try again in a few seconds.");
-  } else if (user.balance < data.amount) {
+  }
+
+  const currency = (data.currency && ["sc", "gc"].includes(data.currency.toLowerCase())) 
+    ? data.currency.toLowerCase() 
+    : "sc";
+
+  // Validamos que el objeto wallet exista y que tenga fondos suficientes
+  if (!user.wallet || user.wallet[currency] === undefined) {
+    throw new Error("Selected wallet was not found.");
+  }
+
+  if (user.wallet[currency] < data.amount) {
     throw new Error("You have not enough balance for this action.");
   }
 };

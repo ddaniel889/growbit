@@ -66,7 +66,7 @@
       class="game-list"
     >
       <div class="category">
-        <div class="name">99wiwi Recommends</div>
+        <div class="name">Betsweeps Recommends</div>
 
         <div class="games-arrows">
           <router-link
@@ -226,15 +226,33 @@ export default {
     pvp() {
       return null;
     },
-    originals() {
-      return this.homeGames?.originals;
+   originals() {
+      if (!this.homeGames?.originals) return [];
+      
+      const excluded = ['coinflip', 'cases'];
+      return this.homeGames.originals.filter(game => {
+        const gameId = game.id ? game.id.toLowerCase() : '';
+        const gameName = game.name ? game.name.toLowerCase() : '';
+        
+        // Si el ID o el nombre incluyen 'coinflip' o 'cases', se descartan
+        return !excluded.some(term => gameId.includes(term) || gameName.includes(term));
+      });
     },
-    popularSlots() {
-      return this.homeGames?.popular;
+   popularSlots() {
+      if (!this.homeGames?.popular) return [];
+      const excluded = ['coinflip', 'cases'];
+      return this.homeGames.popular.filter(game => {
+        const gameId = game.id ? game.id.toLowerCase() : '';
+        return !excluded.some(term => gameId.includes(term));
+      });
     },
-    growbitRecommends() {
-      return this.homeGames?.recommends;
-    },
+   growbitRecommends() {
+      if (!this.homeGames?.recommends) return [];
+      const excluded = ['coinflip', 'cases'];
+      return this.homeGames.recommends.filter(game => {
+        const gameId = game.id ? game.id.toLowerCase() : '';
+        return !excluded.some(term => gameId.includes(term));
+      });},
     liveSlots() {
       return this.homeGames?.live;
     },

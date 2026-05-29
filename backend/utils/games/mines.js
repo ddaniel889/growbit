@@ -17,13 +17,13 @@ const minesValidateGameStart = (data) => {
     isNaN(data.amount) === true ||
     data.amount <= 0
   ) {
-    throw new Error("You’ve entered an invalid bet amount.");
+    throw new Error("You've entered an invalid bet amount.");
   } else if (
     data.minesGridSize === undefined ||
     isNaN(data.minesGridSize) === true ||
     ![25, 36, 49, 64].includes(data.minesGridSize)
   ) {
-    throw new Error("You’ve entered an invalid grid size.");
+    throw new Error("You've entered an invalid grid size.");
   } else if (
     data.minesCount === undefined ||
     isNaN(data.minesCount) === true ||
@@ -31,19 +31,25 @@ const minesValidateGameStart = (data) => {
       Math.floor(Math.sqrt(data.minesGridSize)) - 5 ||
     Math.floor(data.minesCount) > data.minesGridSize - 1
   ) {
-    throw new Error("You’ve entered an invalid mines count.");
-  } else if (data.amount < MINES_MIN_AMOUNT) {
-    throw new Error(
-      `You can only bet a min amount of ${parseFloat(MINES_MIN_AMOUNT)
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} DL per game.`,
-    );
-  } else if (data.amount > MINES_MAX_AMOUNT) {
-    throw new Error(
-      `You can only bet a max amount of ${parseFloat(MINES_MAX_AMOUNT)
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} DL per game.`,
-    );
+    throw new Error("You've entered an invalid mines count.");
+  } 
+
+  const currency = (data.currency || 'sc').toLowerCase();
+  if (currency === 'sc') {
+    if (data.amount < MINES_MIN_AMOUNT) {
+      throw new Error(`You can only bet a min amount of ${parseFloat(MINES_MIN_AMOUNT).toFixed(2)} SC per game.`);
+    } else if (data.amount > MINES_MAX_AMOUNT) {
+      throw new Error(`You can only bet a max amount of ${parseFloat(MINES_MAX_AMOUNT).toFixed(2)} SC per game.`);
+    }
+  } else if (currency === 'gc') {
+    
+    const minGC = MINES_MIN_AMOUNT * 100; 
+    const maxGC = MINES_MAX_AMOUNT * 100;
+    if (data.amount < minGC) {
+      throw new Error(`You can only bet a min amount of ${parseFloat(minGC).toFixed(2)} GC per game.`);
+    } else if (data.amount > maxGC) {
+      throw new Error(`You can only bet a max amount of ${parseFloat(maxGC).toFixed(2)} GC per game.`);
+    }
   }
 };
 
@@ -55,13 +61,13 @@ const minesValidateAutobet = (data) => {
     isNaN(data.amount) === true ||
     data.amount <= 0
   ) {
-    throw new Error("You’ve entered an invalid bet amount.");
+    throw new Error("You've entered an invalid bet amount.");
   } else if (
     data.minesGridSize === undefined ||
     isNaN(data.minesGridSize) === true ||
     ![25, 36, 49, 64].includes(data.minesGridSize)
   ) {
-    throw new Error("You’ve entered an invalid grid size.");
+    throw new Error("You've entered an invalid grid size.");
   } else if (
     data.minesGridSize === undefined ||
     isNaN(data.minesGridSize) === true ||
@@ -69,7 +75,7 @@ const minesValidateAutobet = (data) => {
       Math.floor(Math.sqrt(data.minesGridSize)) - 5 ||
     Math.floor(data.minesCount) > data.minesGridSize - 1
   ) {
-    throw new Error("You’ve entered an invalid mines count.");
+    throw new Error("You've entered an invalid mines count.");
   } else if (data.amount < MINES_MIN_AMOUNT) {
     throw new Error(
       `You can only bet a min amount of ${parseFloat(MINES_MIN_AMOUNT)
@@ -95,12 +101,17 @@ const minesValidateAutobet = (data) => {
 };
 
 const minesCheckSendBetUser = (data, user) => {
-  const hasEnoughBalance = user.balance >= data.amount;
-  const hasEnoughSC = user.wallet && user.wallet.sc >= data.amount;
-  const hasEnoughGC = user.wallet && user.wallet.gc >= data.amount;
+  
+  const currency = (data.currency || 'sc').toLowerCase();
 
-  if (!hasEnoughSC) {
-    throw new Error("You don’t have enough balance for this action.");
+  if (!user.wallet || user.wallet[currency] === undefined) {
+    throw new Error("Your wallet could not be loaded. Please try again.");
+  }
+
+  const userBalance = user.wallet[currency];
+
+  if (userBalance < data.amount) {
+    throw new Error(`You don't have enough ${currency.toUpperCase()} balance for this action.`);
   }
 };
 

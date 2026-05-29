@@ -21,6 +21,11 @@ const minesGameSchema = new mongoose.Schema({
   state: { type: String },
   updatedAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
+  currency: {
+  type: String,
+  enum: ["sc", "gc"],
+  default: "sc"
+ }
 });
 
 module.exports = mongoose.model("MinesGame", minesGameSchema);

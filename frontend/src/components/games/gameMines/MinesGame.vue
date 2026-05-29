@@ -14,7 +14,7 @@
             x{{ parseFloat(minesGetWinMultiplier).toFixed(2) }}
           </div>
           <div class="inner-won">
-            You Won <Currency></Currency>
+            You Won <Currency :currency="minesGame.currency || selectedCurrency"></Currency>
             <div class="won-value">
               {{ getBalanceInSelectedCurrency(minesGetPayoutAmount) }}
             </div>

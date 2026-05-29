@@ -38,10 +38,17 @@ const towersCheckSendBetData = (data) => {
 };
 
 const towersCheckSendBetUser = (data, user) => {
-  const hasEnoughBalance = user.balance >= data.amount;
-  const hasEnoughSC = user.wallet && user.wallet.sc >= data.amount;
-  const hasEnoughGC = user.wallet && user.wallet.gc >= data.amount;
-  if (!hasEnoughSC) {
+  const currency = data.currency ? data.currency.toLowerCase() : "sc";
+  
+  if (currency !== "sc" && currency !== "gc") {
+    throw new Error("Invalid currency type.");
+  }
+
+  if (!user.wallet || user.wallet[currency] === undefined) {
+    throw new Error("Wallet not initialized properly.");
+  }
+
+  if (user.wallet[currency] < data.amount) {
     throw new Error("You don’t have enough balance for this action.");
   }
 };
@@ -117,13 +124,13 @@ const towersValidateAutobet = (data) => {
     isNaN(data.amount) === true ||
     data.amount <= 0
   ) {
-    throw new Error("You’ve entered an invalid bet amount.");
+    throw new Error("You've entered an invalid bet amount.");
   } else if (
     data.risk === undefined ||
     typeof data.risk !== "string" ||
     !Object.keys(difficultyMapper).includes(data.risk)
   ) {
-    throw new Error("You’ve entered an invalid risk.");
+    throw new Error("You've entered an invalid risk.");
   } else if (data.amount < TOWERS_MIN_AMOUNT) {
     throw new Error(
       `You can only bet a min amount of ${parseFloat(TOWERS_MIN_AMOUNT)
@@ -136,6 +143,10 @@ const towersValidateAutobet = (data) => {
         .toFixed(2)
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} DL per game.`,
     );
+  }
+
+  if (data.currency && !["sc", "gc"].includes(data.currency.toLowerCase())) {
+    throw new Error("Invalid currency type.");
   }
 
   if (

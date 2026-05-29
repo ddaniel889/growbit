@@ -118,24 +118,54 @@
                   })
                 }}
               </td>
-              <td class="hide_on_small">
-                <div v-if="game.amount" class="money">
-                  {{ getDisplayCurrencyAmountFormatted(game.amount) }}
-                  <Currency></Currency>
-                </div>
-                <div v-else class="money" :class="game.data.box">
-                  <img :src="`/img/keys/${game.data.box.toLowerCase()}.png`" />
-                </div>
-              </td>
+            <td class="hide_on_small">
+  <div v-if="game.amount" class="money">
+    {{ getDisplayCurrencyAmountFormatted(game.amount) }}
+    
+    <img 
+      v-if="game.currency === 'sc'" 
+      src="/img/currencies/sc_icon.png" 
+      alt="SC" 
+      class="table-coin-icon" 
+    />
+    <img 
+      v-else-if="game.currency === 'gc'" 
+      src="/img/currencies/gc_icon.png" 
+      alt="GC" 
+      class="table-coin-icon" 
+    />
+    <Currency v-else></Currency>
+  </div>
+  <div v-else class="money" :class="game.data.box">
+    <img :src="`/img/keys/${game.data.box.toLowerCase()}.png`" />
+  </div>
+</td>
+
+
               <td class="multi" :class="{ lost: !game.multiplier }">
                 {{ game.multiplier?.toFixed(2) || parseFloat(0).toFixed(2) }}x
               </td>
+
               <td class="end">
-                <div class="money">
-                  {{ getDisplayCurrencyAmountFormatted(game.payout) }}
-                  <Currency></Currency>
-                </div>
-              </td>
+  <div class="money">
+    {{ getDisplayCurrencyAmountFormatted(game.payout) }}
+    
+    <img 
+      v-if="game.currency === 'sc'" 
+      src="/img/currencies/sc_icon.png" 
+      alt="SC" 
+      class="table-coin-icon" 
+    />
+    <img 
+      v-else-if="game.currency === 'gc'" 
+      src="/img/currencies/gc_icon.png" 
+      alt="GC" 
+      class="table-coin-icon" 
+    />
+    <Currency v-else></Currency>
+  </div>
+</td>
+
             </tr>
           </tbody>
           <tbody v-else>
@@ -213,8 +243,8 @@ export default {
         "keno",
         "slide",
         "dice",
-        "coinflip",
-        "cases",
+        //"coinflip",
+        //"cases",
         "reme",
         "towers",
       ]),
@@ -250,17 +280,15 @@ export default {
   },
   computed: {
     ...mapGetters(["authUser", "generalBets", "leaderboardData"]),
-    betsGetList() {
+ betsGetList() {
       let bets = [];
       if (this.generalBets.bets?.[this.betsTab]) {
         let isAdmin = this.authUser?.user?.rank === "admin";
-
         let tabBets = this.generalBets.bets[this.betsTab];
-
-        // tabBets = tabBets.filter((b) => !(b.method === "towers" && !isAdmin));
-
-        bets = tabBets.slice(0, 12);
+        bets = JSON.parse(JSON.stringify(tabBets)).slice(0, 12);
+        //bets = tabBets.slice(0, 12);
       }
+      console.log('bets',bets)
       return bets;
     },
   },

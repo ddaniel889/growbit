@@ -89,7 +89,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                "username avatar rank  local.emailVerified balance xp stats limits affiliates anonymous mute ban createdAt",
+                "username avatar rank  local.emailVerified wallet xp stats limits affiliates anonymous mute ban createdAt",
               )
               .lean();
             checkVerified(user);
@@ -124,7 +124,7 @@ module.exports = (io) => {
           minesValidateAutobet(data);
           const user = await User.findById(socket.decoded._id)
             .select(
-              "username avatar rank  local.emailVerified balance xp stats limits affiliates anonymous mute ban createdAt",
+              "username avatar rank  local.emailVerified wallet xp stats limits affiliates anonymous mute ban createdAt",
             )
             .lean();
 
@@ -153,7 +153,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                " username avatar rank balance xp stats limits rakeback affiliates anonymous mute ban createdAt",
+                " username avatar rank wallet xp stats limits rakeback affiliates anonymous mute ban createdAt",
               )
               .lean();
             socketCheckUserData(user, true);
@@ -183,7 +183,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                " username avatar rank balance xp stats limits rakeback affiliates anonymous mute ban createdAt",
+                " username avatar rank wallet xp stats limits rakeback affiliates anonymous mute ban createdAt",
               )
               .lean();
             socketCheckUserData(user, true);

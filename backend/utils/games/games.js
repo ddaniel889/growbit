@@ -28,7 +28,7 @@ async function updateNonce(seedId, k = 1) {
   ).exec();
 }
 
-async function updateUser(payoutAmount, balance, wager, houseEdge, user) {
+async function updateUser(payoutAmount, balance, wager, houseEdge, user, currency = "sc") {
   //When game is extended (not quick) wager is updated in the first call and payout is updated
   // in the second one when game is completed
 
@@ -43,7 +43,11 @@ async function updateUser(payoutAmount, balance, wager, houseEdge, user) {
     user._id,
     {
       $inc: {
-        balance: balance,
+        // CAMBIADO: Ahora afecta dinámicamente a wallet.sc o wallet.gc
+        [`wallet.${currency.toLowerCase()}`]: balance,
+        // Opcional: Si deseas mantener la sincronización con el balance histórico legacy:
+        balance: balance, 
+        
         "stats.bet": wager,
         "stats.won": payoutAmount,
         "stats.played": wager > 0 ? 1 : 0,
@@ -66,7 +70,8 @@ async function updateUser(payoutAmount, balance, wager, houseEdge, user) {
       returnDocument: "after",
     },
   )
-    .select("balance username stats rakeback updatedAt anonymous")
+    // CAMBIADO: Agregamos "wallet" al select para que regrese las monedas SC y GC mutadas al juego
+    .select("balance wallet username stats rakeback updatedAt anonymous")
     .lean();
 }
 

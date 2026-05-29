@@ -110,9 +110,9 @@ export default {//
     slideSetAmount(action) {
       let amount = +this.slideAmount;
 
-      const balanceConverted = this.getDisplayCurrencyAmount(
-        this.authUser.user.balance
-      );
+    const activeCurrencyKey = this.selectedCurrency.toLowerCase();
+    const userBalance = this.authUser?.user?.wallet?.[activeCurrencyKey] || 0;
+    const balanceConverted = this.getDisplayCurrencyAmount(userBalance);
 
       if (action === "clear") {
         amount = 0;
@@ -147,10 +147,8 @@ export default {//
         return;
       }
 
-      const currentBalance = this.getBalanceInSelectedCurrency(
-        this.authUser.user.balance
-      );
-
+     const activeCurrencyKey = this.selectedCurrency.toLowerCase();
+     const currentBalance = this.authUser.user.wallet?.[activeCurrencyKey] || 0;
       if (Number(this.slideAmount) > currentBalance) {
         this.notificationShow({
           type: "error",
@@ -172,16 +170,19 @@ export default {//
       }
 
       this.slideSendBetSocket({
-        amount: dlsAmount,
+        amount: Number(this.slideAmount), // Mandamos el valor puro numérico
         color: color,
+        currency: activeCurrencyKey, // 
       });
     },
   },
   computed: {
     ...mapGetters(["socketSendLoading", "authUser", "slideData", "gameConfig"]),
-    hasBalance() {
-    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
-    return currentBalance > 0;
+     hasBalance() {
+      if (!this.authUser || !this.authUser.user || !this.selectedCurrency) return false;
+      const activeCurrencyKey = this.selectedCurrency.toLowerCase();
+      const currentBalance = this.authUser.user.wallet?.[activeCurrencyKey] || 0;
+      return currentBalance > 0;
     },
     betting() {
       if (!this.slideData || !this.slideData.game) return false;

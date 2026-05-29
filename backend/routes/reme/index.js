@@ -36,20 +36,26 @@ module.exports = (io) => {
 
         const betAmount = +req.body.amount;
         const autobet = req.body.autobet;
+        // NUEVO: Recibir la moneda elegida por el cliente, por defecto cae en 'sc'
+        const currency = req.body.currency ? req.body.currency.toLowerCase() : "sc";
 
-        validateParams(betAmount);
+        validateParams(betAmount, currency);
 
+        // AJUSTE: Cambiamos 'balance' por 'wallet' en la proyección de Mongoose
         const user = await User.findById(req.user._id)
           .select(
-            "rank balance local.emailVerified stats limits fair username mute ban affiliates",
+            "rank wallet local.emailVerified stats limits fair username mute ban affiliates",
           )
           .lean();
 
         checkVerified(user);
 
-        checkBalance(user, betAmount);
+        // AJUSTE: Ahora validamos contra la billetera multi-moneda
+        checkBalance(user, betAmount, currency);
 
-        const { rolls, multiplier } = await play(user, betAmount, io, autobet);
+        // AJUSTE: Le inyectamos la variable 'currency' al servicio play() 
+        // para que sepa de dónde descontar y acreditar de forma atómica
+        const { rolls, multiplier } = await play(user, betAmount, io, autobet, currency);
 
         socketRemoveAntiSpam(userId);
         res
@@ -69,22 +75,29 @@ module.exports = (io) => {
   return router;
 };
 
-function validateParams(amount) {
+// AJUSTE: Agregamos soporte visual de moneda al string de error
+function validateParams(amount, currency) {
   if (!amount || isNaN(amount)) {
     throw new Error("Invalid Amount");
   }
 
   if (amount < REME_MIN_AMOUNT) {
     throw new Error(
-      `You need to bet at least ${parseFloat(REME_MIN_AMOUNT).toFixed(2)} DLS.`,
+      `You need to bet at least ${parseFloat(REME_MIN_AMOUNT).toFixed(2)} ${currency.toUpperCase()}.`,
     );
   }
 }
 
-function checkBalance(user, betAmount) {
+// AJUSTE: Comprobación dinámica de saldo basada en la billetera multi-moneda
+function checkBalance(user, betAmount, currency) {
   if (!user) {
     throw new Error("Something went wrong. Please try again in a few seconds.");
-  } else if (user.balance < betAmount) {
-    throw new Error("You have not enough balance for this action.");
+  }
+  
+  // Extraemos dinámicamente el balance de la moneda solicitada ('sc' o 'gc')
+  const currentWalletBalance = user.wallet ? user.wallet[currency] : 0;
+
+  if (currentWalletBalance < betAmount) {
+    throw new Error(`You have not enough ${currency.toUpperCase()} balance for this action.`);
   }
 }

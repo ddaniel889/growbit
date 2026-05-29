@@ -72,7 +72,7 @@ const plinkoSocket = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                "rank balance local.emailVerified stats limits fair agreed mute ban affiliates",
+                "rank wallet local.emailVerified stats limits fair agreed mute ban affiliates",
               )
               .lean();
             checkVerified(user);
@@ -89,7 +89,11 @@ const plinkoSocket = (io) => {
               const rows = Math.floor(data.rows);
               const risk = data.risk;
 
-              let { game } = await playPlinko(user, amount, rows, risk, io);
+              const currency = (data.currency && ["sc", "gc"].includes(data.currency.toLowerCase())) 
+                ? data.currency.toLowerCase() 
+                : "sc";
+
+              let { game } = await playPlinko(user, amount, rows, risk, io,currency);
 
               callback({ success: true, game: game });
 
@@ -140,4 +144,4 @@ const plinkoSocket = (io) => {
   });
 };
 
-module.exports = plinkoSocket;
+module.exports = plinkoSocket;//

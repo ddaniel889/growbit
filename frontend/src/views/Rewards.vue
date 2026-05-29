@@ -45,18 +45,18 @@
         </div>
       </div>
 
-      <div class="column right">
+      <!--div class="column right">
         <div class="rakeback-container">
           <span>Claim Keys</span>
           <div class="rakeback-wrapper">
             <Keys />
           </div>
         </div>
-      </div>
+      </div-->
     </div>
 
     <div class="mid-row">
-      <div class="daily-case">
+      <!--div class="daily-case">
         <div v-if="!linkDiscordToken" class="title">Daily case</div>
 
         <div v-if="!linkDiscordToken" class="subtitle">
@@ -103,7 +103,7 @@
             <CopyIcon></CopyIcon>
           </button>
         </div>
-      </div>
+      </div-->
 
       <div class="promo">
         <div class="title">Claim promocode</div>
@@ -126,46 +126,46 @@
           <div>Daily</div>
           <div class="total-wager">
             <span>{{
-              getSCAmountFormatted(
+              getGCAmountFormatted(
                 authUser.user.rakeback.daily.earned,
               )
             }}</span>
-            <Currency currency="sc"></Currency>
+            <Currency currency="gc"></Currency>
           </div>
         </div>
         <div class="stat">
           <div>Monthly</div>
           <div class="total-wager">
             <span>{{
-              getSCAmountFormatted(
+              getGCAmountFormatted(
                 authUser.user.rakeback.monthly.earned,
               )
             }}</span>
-            <Currency currency="sc"></Currency>
+            <Currency currency="gc"></Currency>
           </div>
         </div>
         <div class="stat">
           <div>Weekly</div>
           <div class="total-wager">
             <span>{{
-              getSCAmountFormatted(
+              getGCAmountFormatted(
                 authUser.user.rakeback.weekly.earned,
               )
             }}</span>
-            <Currency currency="sc"></Currency>
+            <Currency currency="gc"></Currency>
           </div>
         </div>
         <div class="stat">
           <div>Total</div>
           <div class="total-wager">
             <span>{{
-              getSCAmountFormatted(
+              getGCAmountFormatted(
                 authUser.user.rakeback.daily.earned +
                   authUser.user.rakeback.weekly.earned +
                   authUser.user.rakeback.monthly.earned,
               )
             }}</span>
-            <Currency currency="sc"></Currency>
+            <Currency currency="gc"></Currency>
           </div>
         </div>
       </div>
@@ -278,16 +278,15 @@ export default {
     openDaily() {
       this.$router.push("/cases/daily");
     },
-    getSCAmountFormatted(amount) {
-    // Obtenemos la tasa de SC específicamente, independientemente de la global
-    const scRate = this.fiatRates?.data?.['sc'] || 1;
-    const value = amount * scRate;
-    
-    return value.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  },
+    getGCAmountFormatted(amount) {
+      const gcRate = this.fiatRates?.data?.['gc'] || 1;
+      const value = amount * gcRate;
+      
+      return value.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    },
     getLevelClass(name) {
       return {
         "bg-bronze": name === "Bronze",

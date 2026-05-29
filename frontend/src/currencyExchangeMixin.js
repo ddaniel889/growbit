@@ -6,11 +6,18 @@ export const currencyExchangeRatesMixin = {
   },
   methods: {
     getDlsAmountForBetting(amount) {
-      // Guard against null/undefined fiatRates.data
+      // 1. Obtener la tasa de conversión (si aplica, si no cae en 1)
       const rate = this.fiatRates?.data?.[this.selectedCurrency] || 1;
       const dlsAmount = amount / rate;
-      // Guard against null/undefined authUser.user.balance
-      return Math.min(dlsAmount, this.authUser?.user?.balance || 0);
+
+      // 2. NUEVO: Identificar la moneda activa para buscar en el objeto wallet
+      const currentCurrency = this.selectedCurrency ? this.selectedCurrency.toLowerCase() : "sc";
+      
+      // 3. NUEVO: Leer el saldo real desde wallet.sc o wallet.gc
+      const walletBalance = this.authUser?.user?.wallet?.[currentCurrency] || 0;
+
+      // Retorna el mínimo entre el monto calculado y lo que realmente tiene en esa billetera
+      return Math.min(dlsAmount, walletBalance);
     },
     getDisplayCurrencyAmount(amount) {
       const rate = this.fiatRates?.data?.[this.selectedCurrency || "DLS"] || 1;

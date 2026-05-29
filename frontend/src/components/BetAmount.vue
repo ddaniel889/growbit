@@ -67,23 +67,34 @@ export default {
       this.betAmount = Number(this.betAmount).toFixed(2);
     },
     setAmount: function (action) {
-      let amount = this.betAmount;
+      // Forzamos el monto actual a tipo numérico para operar de forma segura
+      let amount = Number(this.betAmount) || 0;
 
-      const balanceConverted = this.getDisplayCurrencyAmount(
-        this.authUser.user.balance
-      );
+      // CONTROL DE SEGURIDAD: Validar que existan las billeteras cargadas
+      if (!this.authUser?.user?.wallet || !this.selectedCurrency) return;
+
+      // Extraemos el balance específico de la moneda seleccionada (sc o gc)
+      const rawWalletBalance = this.authUser.user.wallet[this.selectedCurrency.toLowerCase()] || 0;
+
+      // Convertimos el balance crudo de la billetera al formato visual escalado del input
+      const balanceConverted = Number(this.getDisplayCurrencyAmount(rawWalletBalance)) || 0;
 
       if (action === "1/2") {
-        amount = parseFloat(amount / 2).toFixed(2);
+        amount = amount / 2;
       } else if (action === "x2") {
-        amount = parseFloat(amount * 2).toFixed(2);
+        amount = amount * 2;
       } else if (action === "max") {
         amount = balanceConverted;
       }
 
-      amount = Math.min(amount, balanceConverted).toFixed(2);
+      // Validar que el nuevo monto calculado no exceda el balance real de esa divisa
+      if (amount > balanceConverted) {
+        amount = balanceConverted;
+      }
 
-      this.betAmount = amount > 0 ? amount : 0.01;
+      // Controlar el límite mínimo para que no se vacíe a cero (mínimo 0.01)
+      const finalAmount = amount > 0 ? amount : 0.01;
+      this.betAmount = finalAmount.toFixed(2);
     },
   },
   watch: {

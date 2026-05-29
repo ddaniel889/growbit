@@ -51,9 +51,6 @@ module.exports = (io) => {
           return next(new Error("You need to sign in to perform this action."));
         }
       }
-      // Get slide data from controller and send data to frontend
-      const dataSlide = await slideGetDataSocket();
-      socket.emit("init", dataSlide);
 
       next();
     } catch (err) {
@@ -64,9 +61,20 @@ module.exports = (io) => {
     }
   });
 
-  io.of("/slide").on("connection", (socket) => {
+  io.of("/slide").on("connection", async (socket) => {
     const identifier = getIdentifier(socket);
     socketAddConnectionLimit("slide", identifier);
+
+    try {
+      // 1. Unimos el socket al room global de 'slide' para que reciba las transmisiones masivas de giros
+      socket.join("slide");
+
+      // 2. Traemos la data actual y se la enviamos bajo el canal esperado por tu front (comúnmente 'game' o 'slide_data')
+      const dataSlide = await slideGetDataSocket();
+      socket.emit("game", dataSlide); 
+    } catch (err) {
+      console.error("Error al inicializar cliente en slide:", err.message);
+    }
 
     socket.on("sendBet", async (data, callback) => {
       if (callback === undefined || typeof callback !== "function") {
@@ -80,7 +88,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                "username avatar rank balance xp stats limits affiliates anonymous mute ban createdAt",
+                "username avatar rank wallet balance xp stats limits affiliates anonymous mute ban createdAt",
               )
               .lean();
             socketCheckUserData(user, true);

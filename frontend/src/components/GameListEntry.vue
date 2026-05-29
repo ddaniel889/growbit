@@ -28,7 +28,7 @@ export default {
       }
     },
   },
-  computed: {
+  computed: { //
     slot() {
       return this.game.type.includes("video-slots");
     },

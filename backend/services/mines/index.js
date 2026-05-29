@@ -30,10 +30,16 @@ const { tryToClaim } = require("../challenges");
 // Mines variables
 let minesGames = [];
 
+// HELPER NUEVO: Normaliza la extracción segura del ID de usuario dentro del array en memoria
+const getUserIdString = (userField) => {
+  if (!userField) return "";
+  return userField._id ? userField._id.toString() : userField.toString();
+};
+
 const minesGetGame = (user) => {
   // Get users mines game index
   const index = minesGames.findIndex(
-    (element) => element.user.toString() === user._id.toString()
+    (element) => getUserIdString(element.user) === user._id.toString()
   );
 
   // Get users mines game
@@ -51,9 +57,9 @@ const minesSendBetSocket = async (io, socket, user, data, callback) => {
     // Validate user
     minesCheckSendBetUser(data, user);
 
-    // Get users mines game
+    // Get users mines game (Usa helper seguro para evitar crasheos)
     const minesGame = minesGames.find(
-      (element) => element.user._id.toString() === user._id.toString()
+      (element) => getUserIdString(element.user) === user._id.toString()
     );
 
     // Validate user mines game
@@ -74,15 +80,19 @@ const minesSendBetSocket = async (io, socket, user, data, callback) => {
     // Create database query promises array
     let promises = [];
 
+    const currency = (data.currency || 'sc').toLowerCase();
     // Add update users data, rain, referred user and create roll bet queries to promises array
     promises = [
-      updateUser(0, -amount, amount, MINES_HOUSE_EDGE, user),
+      updateUser(0, -amount, amount, MINES_HOUSE_EDGE, user, currency),
       updateNonce(seedDatabase._id),
       MinesGame.create({
         amount: amount,
         minesCount: minesCount,
         gridSize: minesGridSize,
         deck: deck,
+        currency: currency,
+        payout: amount,        // <-- AGREGAR: Payout inicial es lo mismo que apostó
+        multiplier: 1.00,      // <-- AGREGAR: Multiplicador inicial es 1x
         fair: {
           seed: seedDatabase._id,
           nonce: seedDatabase.nonce,
@@ -124,7 +134,7 @@ const minesAutobet = async (io, socket, user, data, callback) => {
     minesCheckSendBetUser(data, user);
 
     const existingGame = minesGames.find(
-      (element) => element.user._id.toString() === user._id.toString()
+      (element) => getUserIdString(element.user) === user._id.toString()
     );
 
     checkIfGameInProgress(existingGame);
@@ -169,13 +179,16 @@ const minesAutobet = async (io, socket, user, data, callback) => {
 
     const multiplier = amountPayout / amount;
 
+    const currency = (data.currency || 'sc').toLowerCase();
+
     promises = [
       updateUser(
         amountPayout,
         amountPayout - amount,
         amount,
         MINES_HOUSE_EDGE,
-        user
+        user,
+        currency
       ),
       updateNonce(seedDatabase._id),
       MinesGame.create({
@@ -184,6 +197,7 @@ const minesAutobet = async (io, socket, user, data, callback) => {
         minesCount: minesCount,
         deck: deck,
         revealed: revealed,
+        currency: currency,
         fair: {
           seed: seedDatabase._id,
           nonce: seedDatabase.nonce,
@@ -230,7 +244,6 @@ const minesAutobet = async (io, socket, user, data, callback) => {
       game: minesSanitizeGame(gameObject),
     });
   } catch (err) {
-    //console.log(err)
     socketRemoveAntiSpam(socket.decoded._id);
     callback({
       success: false,
@@ -241,9 +254,9 @@ const minesAutobet = async (io, socket, user, data, callback) => {
 
 const minesSendRevealSocket = async (io, socket, user, data, callback) => {
   try {
-    // Get users mines game
+    // Get users mines game usando el nuevo validador normalizado
     let minesGame = minesGames.find(
-      (element) => element.user._id.toString() === user._id.toString()
+      (element) => getUserIdString(element.user) === user._id.toString()
     );
 
     // Validate user mines game
@@ -278,9 +291,11 @@ const minesSendRevealSocket = async (io, socket, user, data, callback) => {
       // Create promises database query array
       let promises = [];
 
+      const gameCurrency = (minesGame.currency || 'sc').toLowerCase();
+
       // Add update users data and mines game to promises array
       promises = [
-        updateUser(amountPayout, amountPayout, 0, null, user),
+        updateUser(amountPayout, amountPayout, 0, null, user, gameCurrency),
         MinesGame.findByIdAndUpdate(
           minesGame._id,
           {
@@ -293,7 +308,7 @@ const minesSendRevealSocket = async (io, socket, user, data, callback) => {
           { new: true }
         )
           .select(
-            "amount payout multiplier minesCount gridSize fair deck revealed user state updatedAt"
+            "amount payout multiplier minesCount gridSize fair deck revealed user state currency updatedAt"
           )
           .populate({
             path: "fair.seed",
@@ -350,7 +365,7 @@ const minesSendRevealSocket = async (io, socket, user, data, callback) => {
         },
         { new: true }
       )
-        .select("amount minesCount gridSize deck revealed user state")
+        .select("amount minesCount gridSize deck revealed user state currency") // Agregado currency por seguridad
         .lean();
 
       // Update mines game in mines games array
@@ -377,9 +392,9 @@ const minesSendRevealSocket = async (io, socket, user, data, callback) => {
 
 const minesSendCashoutSocket = async (io, socket, user, data, callback) => {
   try {
-    // Get users mines game
+    // Get users mines game utilizando la normalización de ID segura
     let minesGame = minesGames.find(
-      (element) => element.user._id.toString() === user._id.toString()
+      (element) => getUserIdString(element.user) === user._id.toString()
     );
 
     // Validate user mines game
@@ -391,8 +406,10 @@ const minesSendCashoutSocket = async (io, socket, user, data, callback) => {
     // Get payout multiplier
     const multiplier = amountPayout / minesGame.amount;
 
+    const gameCurrency = (minesGame.currency || 'sc').toLowerCase();
+
     let dataDatabase = await Promise.all([
-      updateUser(amountPayout, amountPayout, 0, 0, user),
+      updateUser(amountPayout, amountPayout, 0, 0, user, gameCurrency),
       MinesGame.findByIdAndUpdate(
         minesGame._id,
         {
@@ -404,10 +421,9 @@ const minesSendCashoutSocket = async (io, socket, user, data, callback) => {
         { new: true }
       )
         .select(
-          "amount payout multiplier minesCount gridSize deck revealed user state updatedAt fair"
+          "amount payout multiplier minesCount gridSize deck revealed user state currency updatedAt fair"
         )
         .populate({ path: "fair.seed", select: "seedClient hash nonce" })
-
         .lean(),
     ]);
 
@@ -461,9 +477,8 @@ const minesInit = async (io) => {
       console.warn("MongoDB not connected. Skipping Mines initialization.");
       return;
     }
-    // Get towers games and add to towers game array
     minesGames = await MinesGame.find({ state: "created" })
-      .select("amount minesCount gridSize deck revealed user state")
+      .select("amount minesCount gridSize deck revealed user state currency") // Agregado currency
       .lean();
   } catch (err) {
     console.error(err);
@@ -477,4 +492,4 @@ module.exports = {
   minesSendCashoutSocket,
   minesInit,
   minesAutobet,
-};
+}

@@ -14,7 +14,7 @@
           :click="() => claimRakeback(r.type, r.available)"
         >
           <div class="claim">
-            <Currency currency="sc"></Currency>
+            <Currency currency="gc"></Currency>
             <span>{{
               getDisplayCurrencyAmountFormatted(r.available ? r.available : 0.0)
             }}</span>
@@ -66,7 +66,7 @@ export default {
         } else return new Date(claimIntervals["daily"]);
       }
 
-      if (rakeback.type === "weekly") {
+      if (rakeback.type === "weekly") {//
         if (!this.isSameWeek(new Date(rakeback.lastClaimed), today)) {
           return new Date(0);
         } else return new Date(claimIntervals["weekly"]);
@@ -82,7 +82,7 @@ export default {
       if (amount < 0.001) {
         this.notificationShow({
           type: "error",
-          message: "You can't claim less than 0.001 DLS.",
+          message: "You can't claim less than 0.001 GC.",
         });
         return;
       }

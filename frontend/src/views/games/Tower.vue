@@ -332,6 +332,8 @@ export default {
         return;
       }
 
+      const currencySelected = this.selectedCurrency.toLowerCase();
+
       if (this.mode === "auto" && this.autoActive) {
         if (!this.towersSelected?.length) {
           return this.notificationShow({
@@ -344,6 +346,7 @@ export default {
           amount: dlsAmount,
           risk: this.towersRisk,
           tiles: this.towersSelected,
+          currency: currencySelected,
         };
         let last = this.count === 0 && !this.autoInfinite;
         if (this.count > 0 || this.autoInfinite) {
@@ -373,7 +376,7 @@ export default {
           this.towersClearGame();
         }
       } else {
-        const data = { amount: dlsAmount, risk: this.towersRisk };
+        const data = { amount: dlsAmount, risk: this.towersRisk,currency: currencySelected, };
         this.towersSendBetSocket(data);
       }
     },
@@ -390,29 +393,44 @@ export default {
       "selectedCurrency",
       "towersSelected",
     ]),
-    hasBalance() {
-    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
-    return currentBalance > 0;
+   hasBalance() {
+      const currentBalance = this.authUser?.user?.wallet?.[this.selectedCurrency.toLowerCase()] || 0;
+      return currentBalance >= Number(this.betAmount);
     },
-    nextProfit() {
-      return (
-        (this.towersGame?.amount || 0) *
-        towersGetCurrentMultiplier(
-          {
-            risk: this.towersRisk,
-            revealed: new Array((this.towersGame?.revealed?.length || 0) + 1),
-          },
-          this.gameConfig.towersEdge
-        )
-      );
-    },
-    towersGetCashoutAmount() {
+nextProfit() {
+  // 1. Controlar que los coeficientes de configuración ya existan para evitar NaN momentáneos
+  if (!this.gameConfig || !this.gameConfig.towersEdge) return 0;
+
+  // 2. Determinar el monto base (Si hay juego activo usa el monto apostado guardado, si no, el del input)
+  const isGameActive = this.towersGame && this.towersGame.state === 'created';
+  const baseAmount = isGameActive ? this.towersGame.amount : Number(this.betAmount);
+
+  // 3. Determinar cuántas filas se han revelado
+  // Si no hay juego activo, asumimos 0 (para calcular el multiplicador de la primera fila)
+  const revealedLength = isGameActive && this.towersGame.revealed ? this.towersGame.revealed.length : 0;
+
+  // 4. Validar que el monto base sea un número válido antes de multiplicar
+  if (isNaN(baseAmount) || baseAmount <= 0) return 0;
+
+  return (
+    baseAmount *
+    towersGetCurrentMultiplier(
+      {
+        risk: this.towersRisk,
+        // Creamos el array simulando la fila objetivo (la actual + 1)
+        revealed: new Array(revealedLength + 1),
+      },
+      this.gameConfig.towersEdge
+    )
+  );
+},
+ towersGetCashoutAmount() {
       return (
         this.towersGame.amount *
         towersGetCurrentMultiplier(this.towersGame, this.gameConfig.towersEdge)
       );
     },
-    maxBet() {
+  maxBet() {
       const maxMulti = towersGetCurrentMultiplier(
         { risk: this.towersRisk, revealed: new Array(9) },
         this.gameConfig.towersEdge

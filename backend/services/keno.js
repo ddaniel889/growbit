@@ -64,10 +64,16 @@ function getNumbers(seed) {
  * @param {any} user - user
  * @param {number[]} picks - picks
  * @param {number} betAmount - betAmount
+ * @param {string} mode - manual / auto
  * @param io
+ * @param {string} currency - sc / gc
  */
-const play = async (user, picks, betAmount, mode, io) => {
-  let wageredUser = await updateUser(0, -betAmount, 0, 0, user);
+const play = async (user, picks, betAmount, mode, io, currency = "sc") => {
+  
+  // =========================================================================
+  // FASE 1: DESCONTAR APUESTA AL INICIAR EL JUEGO
+  // =========================================================================
+  let wageredUser = await updateUser(0, -betAmount, betAmount, KENO_HOUSE_EDGE, user, currency);
 
   io.of("/general").to(user._id.toString()).emit("user", { user: wageredUser });
 
@@ -89,7 +95,6 @@ const play = async (user, picks, betAmount, mode, io) => {
 
   if (untouchedMultiplier * betAmount > FAIR_LIMIT) {
     let userId = user._id.toString();
-
     let adjustCount = cache.get(userId) || 0;
 
     if (adjustCount < 2) {
@@ -104,13 +109,11 @@ const play = async (user, picks, betAmount, mode, io) => {
       }
 
       if (newGood < good) {
-        //Skip nonce
         logger.info(
           `Keno result adjusted : seed : ${seed._id.toString()} nonce : ${seed.nonce}`,
         );
 
         numbers = newNumbers;
-
         untouchedMultiplier = getMultiplier(picks.length, newGood);
         await updateNonce(seed._id);
         cache.set(userId, adjustCount + 1);
@@ -124,23 +127,16 @@ const play = async (user, picks, betAmount, mode, io) => {
   }
 
   const multiplier = limitMultiplier(betAmount, untouchedMultiplier, "keno");
-
   const payout = betAmount * multiplier;
 
   const promises = [
-    updateUser(
-      payout,
-      multiplier * betAmount,
-      betAmount,
-      KENO_HOUSE_EDGE,
-      user,
-    ),
     updateNonce(seed._id),
     QuickGame.create({
       game: "keno",
       amount: betAmount,
       payout: payout,
       multiplier: multiplier,
+      currency: currency.toLowerCase(), // Almacenamos la moneda en el historial
       data: { numbers: numbers, picks: picks },
       fair: {
         nonce: seed.nonce,
@@ -150,7 +146,7 @@ const play = async (user, picks, betAmount, mode, io) => {
     }),
   ];
 
-  const [updatedUser, nonce, game] = await Promise.all(promises);
+  const [nonce, game] = await Promise.all(promises);
 
   updateAffiliate(user, betAmount, KENO_HOUSE_EDGE);
   updateReports(user, betAmount, payout, "keno");
@@ -162,24 +158,24 @@ const play = async (user, picks, betAmount, mode, io) => {
     method: "keno",
   };
 
-  if (mode === "manual") {
-    setTimeout(
-      () => {
-        io.of("/general")
-          .to(user._id.toString())
-          .emit("user", { user: updatedUser });
+  // =========================================================================
+  // FASE 2: ACREDITAR MULTIPLICADOR / PREMIO OBTENIDO
+  // =========================================================================
+  const executeAcreditation = async () => {
+    // Parámetros: payoutAmount=payout, balance=payout, wager=0 (Ya cobrado en Fase 1)
+    let updatedUser = await updateUser(payout, payout, 0, KENO_HOUSE_EDGE, user, currency);
 
-        generalAddBetsList(io, bet, updatedUser);
-      },
-      1030, // takes 100ms for each tile to reveal
-    );
-  } else {
-    // autplay hence no delay as all fields are revelaed at the same time
     io.of("/general")
       .to(user._id.toString())
       .emit("user", { user: updatedUser });
 
     generalAddBetsList(io, bet, updatedUser);
+  };
+
+  if (mode === "manual") {
+    setTimeout(executeAcreditation, 1030); // Espera a que termine la animación
+  } else {
+    await executeAcreditation(); // Sin retardo para el autoplay
   }
 
   return {

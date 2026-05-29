@@ -16,6 +16,11 @@ const towersGameSchema = new mongoose.Schema({
     seed: { type: mongoose.Schema.ObjectId, ref: "UserSeed" },
     nonce: { type: Number },
   },
+  currency: {
+  type: String,
+  enum: ["sc", "gc"],
+  default: "sc"
+ },
   user: { type: mongoose.Schema.ObjectId, ref: "User" },
   state: { type: String },
   updatedAt: { type: Date, default: Date.now },

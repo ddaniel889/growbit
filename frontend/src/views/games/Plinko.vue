@@ -21,9 +21,9 @@
           </div>
           <div class="controls-main">
             <BetAmount
-              :max-bet="maxBet"
-              :change="(value) => (this.plinkoAmount = value)"
-              :disabled="plinkoGames.length >= 1"
+             :max-bet="maxBet"
+             :change="(value) => (this.plinkoAmount = value)"
+             :disabled="plinkoGames.length >= 1"
             ></BetAmount>
             <div class="controls-rows">
               <div class="controls-amount-title">Number Of Rows</div>
@@ -110,7 +110,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import PlinkoFilterRows from "@/components/games/gamePlinko/PlinkoFilterRows.vue";
+import PlinkoFilterRows from "@/components/games/gamePlinko/PlinkoFilterRows.vue";//
 import AppButton from "@/components/AppButton.vue";
 import PlinkoGame from "@/components/games/gamePlinko/game/PlinkoGame.vue";
 import GameFooter from "@/components/GameFooter.vue";
@@ -236,6 +236,7 @@ export default {
         amount: dlsAmount,
         rows: this.plinkoFilterRows,
         risk: this.plinkoRisk,
+        currency: this.selectedCurrency.toLowerCase()
       };
       await this.plinkoSendCreateSocket(data);
 
@@ -266,10 +267,12 @@ export default {
       "socketSendLoading",
       "plinkoHistory",
       "gameConfig",
+      "selectedCurrency"
     ]),
     hasBalance() {
-    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
-    return currentBalance > 0;
+      if (!this.authUser?.user?.wallet || !this.selectedCurrency) return false;
+      const currentBalance = this.authUser.user.wallet[this.selectedCurrency.toLowerCase()];
+      return currentBalance >= Number(this.plinkoAmount);
     },
     maxBet() {
       return (

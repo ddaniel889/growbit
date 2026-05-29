@@ -120,7 +120,7 @@ createChallenge = async (dto) => {
   return createdChallenges;
 };
 
-async function tryToClaim(user, amount, game, multiplier, io) {
+async function tryToClaim(user, amount, game, multiplier, io) { //TODO - ADAPt 
   try {
     const challenge = await getIfCanBeClaimed(
       amount,
@@ -170,13 +170,13 @@ async function tryToClaim(user, amount, game, multiplier, io) {
 
     generalChatAddMessage(io, {
       room: "en",
-      message: `${updatedUser.anonymous ? "Hidden user" : updatedUser.username} has claimed ${challenge.name} challenge and won ${prize} DLS`,
+      message: `${updatedUser.anonymous ? "Hidden user" : updatedUser.username} has claimed ${challenge.name} challenge and won ${prize} SC`,
       type: "challenge",
     });
 
     await createNotification(
       user._id,
-      `You have claimed ${challenge.name} challenge and won ${prize} DLS`,
+      `You have claimed ${challenge.name} challenge and won ${prize} SC`,
       io,
       "challenge",
     );

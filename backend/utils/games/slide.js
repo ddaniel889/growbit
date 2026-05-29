@@ -40,11 +40,18 @@ const slideCheckSendBetData = (data) => {
 };
 
 const slideCheckSendBetUser = (data, user, slideBets) => {
-  const hasEnoughBalance = user.balance >= data.amount;
-  const hasEnoughSC = user.wallet && user.wallet.sc >= data.amount;
-  const hasEnoughGC = user.wallet && user.wallet.gc >= data.amount;
-  if (!hasEnoughSC) {
-    throw new Error("You don’t have enough balance for this action.");
+  // Aseguramos que venga una moneda válida en el payload ('sc' o 'gc')
+  const currencyKey = data.currency ? data.currency.toLowerCase() : 'sc';
+
+  if (!["sc", "gc"].includes(currencyKey)) {
+    throw new Error("Invalid currency selected.");
+  }
+
+  // Verificación dinámica en la billetera del usuario
+  const hasEnoughWalletBalance = user.wallet && user.wallet[currencyKey] >= data.amount;
+
+  if (!hasEnoughWalletBalance) {
+    throw new Error("You don't have enough balance for this action.");
   } else if (
     slideBets.filter(
       (element) => element.user._id.toString() === user._id.toString(),
@@ -73,16 +80,27 @@ const getWinningColour = (number) => {
   }
 };
 
-const slideSanitizeGame = (slideGame) => {
-  let sanitized = JSON.parse(JSON.stringify(slideGame));
-
-  if (sanitized.state !== "completed" && sanitized.state !== "rolling") {
-    if (sanitized.fair.seed) {
-      delete sanitized.fair.seed;
-    }
-    delete sanitized.outcome;
+const slideSanitizeGame = (game) => {
+  if (!game) {
+    const now = new Date().getTime();
+    return {
+      state: "created",
+      createdAt: now,
+      updatedAt: now,
+      history: []
+    };
   }
-  return sanitized;
+
+  return {
+    _id: game._id,
+    gameIndex: game.gameIndex,
+    state: game.state,
+    outcome: game.outcome,
+    fair: game.fair ? { blockNum: game.fair.blockNum } : undefined,
+    // Garante absoluto de conversión a número Unix timestamp (milisegundos)
+    createdAt: game.createdAt ? new Date(game.createdAt).getTime() : new Date().getTime(),
+    updatedAt: game.updatedAt ? new Date(game.updatedAt).getTime() : new Date().getTime(),
+  };
 };
 
 const slideSanitizeBets = (bets) => {

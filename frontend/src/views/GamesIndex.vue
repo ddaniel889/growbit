@@ -108,13 +108,14 @@ export default {
   },
   computed: {
     ...mapGetters(["gameList", "homeGames", "gameListLoading", "authUser"]),
-    games() {
+ games() {
       const category = this.$route.params.category;
       const query = this.$route.query.filter;
 
       let filtered = this.gameList;
+     
       if (category === "originals") {
-        filtered = this.homeGames.originals;
+        filtered = this.homeGames.originals || [];
       } else if (category === "slots") {
         filtered = filtered.filter((game) => game.type !== "Originals");
 
@@ -136,10 +137,20 @@ export default {
             this.authUser.user.favouriteSlots.includes(game.id),
           );
         } else if (query === "recommended") {
-          filtered = this.homeGames.recommends;
+          filtered = this.homeGames.recommends || [];
         }
       }
 
+     
+      const excludedGames = ['coinflip', 'cases'];
+      filtered = filtered.filter(game => {
+        const gameId = game.id ? game.id.toLowerCase() : '';
+        const gameName = game.name ? game.name.toLowerCase() : '';
+        
+        return !excludedGames.some(term => gameId.includes(term) || gameName.includes(term));
+      });
+
+     
       if (this.providerFilter && this.providerFilter !== "All") {
         filtered = filtered.filter(
           (game) => game.category === this.providerFilter,
@@ -200,7 +211,7 @@ export default {
 
       if (category === "originals") {
         return {
-          title: "99wiwi Games",
+          title: "Betsweeps Games",
           subtitle: "Classic Crypto Games",
         };
       } else if (query === "favourite") {

@@ -233,8 +233,8 @@ export default {
         "keno",
         "slide",
         "dice",
-        "coinflip",
-        "cases",
+        //"coinflip",
+       // "cases",
         "towers",
       ]),
     };

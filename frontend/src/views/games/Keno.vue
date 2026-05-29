@@ -118,7 +118,7 @@ import BetAmount from "@/components/BetAmount.vue";
 import { currencyExchangeRatesMixin } from "@/currencyExchangeMixin";
 import { kenoMultipliers } from "@/utils";
 
-export default {
+export default {//
   name: "Keno",
   mixins: [currencyExchangeRatesMixin],
   metaInfo: {
@@ -227,7 +227,8 @@ export default {
         return;
       }
 
-      const amount = Number(this.betAmount).toFixed(2);
+      // 1. Obtenemos el monto crudo ingresado por el usuario
+      const amount = Number(this.betAmount);
 
       this.count = Math.floor(this.count);
 
@@ -266,9 +267,12 @@ export default {
 
       this.response = [];
       this.hits = 0;
-      const dlsAmount = this.getDlsAmountForBetting(amount);
 
-      if (dlsAmount > this.maxBet) {
+      // CAMBIADO: Ya no convertimos a dólares con getDlsAmountForBetting. 
+      // Enviamos el monto real/crudo correspondiente a la billetera SC o GC.
+      const finalBetAmount = amount; 
+
+      if (finalBetAmount > this.maxBet) {
         this.notificationShow({
           type: "error",
           message: "Max bet exceeded!",
@@ -277,11 +281,13 @@ export default {
         return;
       }
 
+      // CAMBIADO: Enviamos 'currency' al backend para saber qué billetera afectar
       await axios
         .post("keno/play", {
           picks: this.selected,
-          amount: dlsAmount,
+          amount: finalBetAmount,
           mode: this.mode,
+          currency: this.selectedCurrency.toLowerCase(), 
         })
         .then(({ data }) => {
           const numbers = data.numbers;
@@ -320,9 +326,10 @@ export default {
   },
   computed: {
     ...mapGetters(["generalSettings", "authUser", "gameConfig"]),
-    hasBalance() {
-    const currentBalance = this.authUser?.user?.wallet[this.selectedCurrency.toLowerCase()];
-    return currentBalance > 0;
+  hasBalance() {
+      if (!this.authUser?.user?.wallet) return false;
+      const currentBalance = this.authUser.user.wallet[this.selectedCurrency.toLowerCase()] || 0;
+      return currentBalance >= Number(this.betAmount);
     },
     multipliers() {
       if (!this.selected.length) {

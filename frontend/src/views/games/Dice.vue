@@ -107,7 +107,7 @@ import axios from "axios";
 import BetAmount from "@/components/BetAmount.vue";
 import Currency from "@/components/Currency.vue";
 import { currencyExchangeRatesMixin } from "@/currencyExchangeMixin";
-import { getDiceChance } from "@/utils";
+import { getDiceChance } from "@/utils"; //
 
 export default {
   name: "Dice",
@@ -212,11 +212,17 @@ export default {
           target2: this.target2,
           amount: dlsAmount,
           mode: this.targetMode,
+          currency: this.selectedCurrency.toLowerCase() // ENVIAR MONEDA SELECCIONADA (sc o gc)
         })
         .then(({ data }) => {
           this.$refs.gameComponent.callback(data.win, data.roll);
+          //  ACTUALIZAR EL BALANCE EN EL HEADER EN TIEMPO REAL
+          if (data.user) {
+            this.$store.commit("auth_update_user", data.user);
+          }
         })
         .catch((e) => {
+          this.stopAuto();
           this.notificationShow(e);
         });
 

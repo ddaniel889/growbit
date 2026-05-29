@@ -38,11 +38,15 @@
         <span>{{ challenge.remainingClaims }}</span>
       </div>
       <div class="cl" v-else>CLAIMED</div>
-      <div>
-        <span class="purple">Reward:</span>
-        {{ challenge.reward }}
-        <img src="@/assets/images/sc_icon.png" alt="icon" />
-      </div>
+  <div>
+  <span class="purple">Reward:</span>
+  {{ challenge.reward }}
+    <img 
+    :src="getCurrencyIcon(selectedCurrency)" 
+    alt="icon" 
+    @error="handleImageError" 
+  />
+</div>
     </div>
   </div>
 </template>
@@ -58,7 +62,7 @@ export default {
   components: { RaceTimer, GameListEntry, TimerIcon },
   props: ["challenge", "hideButtons"],
   computed: {
-    ...mapGetters(["gameList", "authUser"]),
+    ...mapGetters(["gameList", "authUser","selectedCurrency"]),
     isOriginal() {
       const name = this.challenge.game;
       return isGameOriginal(name);
@@ -84,6 +88,27 @@ export default {
     return {};
   },
   methods: {
+    getCurrencyIcon(currency) {
+  
+    const currentCurrency = currency ? currency.toLowerCase() : 'sc';
+    
+    try {
+  
+      return require(`@/assets/images/${currentCurrency}_icon.png`);
+    } catch (e) {
+      
+      try {
+        return require(`@/assets/images/sc_icon.png`);
+      } catch (err) {
+        
+        return '/img/game/sc_icon.png'; 
+      }
+    }
+  },
+  handleImageError(event) {
+    event.target.src = require(`@/assets/images/sc_icon.png`);
+  },
+
     midnight() {
       const now = new Date();
 
@@ -282,6 +307,15 @@ export default {
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    img {
+      width: 20px;          // Tamaño estándar de los íconos de moneda del navbar
+      height: 20px;
+      object-fit: contain;  // Evita que la imagen se deforme al escalar
+      flex-shrink: 0;       // Evita que el contenedor aplaste la imagen
+      display: inline-block;
+      vertical-align: middle;
     }
 
     .cl {

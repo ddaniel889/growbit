@@ -9,55 +9,46 @@
                   <img class="logo-large" src="/img/betsweeps.png" alt="Betsweeps Logo" />
                   <!-- Logo para Móvil (Agregado) -->
                   <img class="logo-small" src="/img/betsweeps.png" alt="Betsweeps Logo" />
-
                 </div>
             </router-link>
             <div class="switcher"></div>
             <div class="wallet" v-if="authUser?.user">  
             <div class="money">
             <span class="ingame" v-if="playingSlots">(In Game)</span>
-
            <img
                 @click="show = !show"
                 v-if="!playingSlots"
                 :src="`/img/currencies/${selectedCurrency.toLowerCase()}_icon.png`" 
                 alt=""
                 />
-
           <span
              class="balance-value"
             :style="balanceWidth"
             @click="show = !show"
             v-if="!playingSlots"
             >{{ balance }}</span>
-
           <ArrowIcon
           v-if="!playingSlots"
           @click="show = !show"
           class="chevron"/>
-
          <transition name="slide">
            <div class="rows-menu" v-if="show === true">
             <div class="menu-inner">
-        
-
-    <button
-    v-for="(item, index) in balances"
-    :key="index"
-    @click="pickCurrency(item.currency)"
-    :class="{ active: item.currency === selectedCurrency }"
-  >
-    <span>
-      {{ Number(item.balance).toLocaleString("en-US", { minimumFractionDigits: 2 }) }}
-    </span>
-   <span class="">  <img  :src="`/img/currencies/${item.currency.toLowerCase()}_icon.png`" /></span> 
-  </button>
+        <button
+         v-for="(item, index) in balances"
+         :key="index"
+         @click="pickCurrency(item.currency)"
+         :class="{ active: item.currency === selectedCurrency }"
+         >
+           <span>
+             {{ Number(item.balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+           </span>
+          <span class="">  <img  :src="`/img/currencies/${item.currency.toLowerCase()}_icon.png`" /></span> 
+        </button>
           </div>
           </div>
           </transition>
           </div>
-
-
               <app-button
                 :click="
                   () => modalsSetShow(modalsShow === 'Wallet' ? null : 'Wallet')
@@ -164,7 +155,7 @@ export default {
       "supportChat",
       "generalChat",
       "fiatRates",
-      "selectedCurrency",
+      //"selectedCurrency",
       "rakebackData",
       "modalsShow",
       "authUser",
@@ -249,6 +240,18 @@ export default {
 
       return false;
     },
+
+    // AGREGA ESTA PROPIEDAD COMPUTADA LOCAL MANUALMENTE:
+  selectedCurrency() {
+    // Obtenemos el valor real que tiene el store de Vuex
+    const storeCurrency = this.$store.getters.selectedCurrency;
+    
+    // Si la moneda del store es válida (SC o GC), la usamos; si es DLS o cualquier otra cosa, devolvemos 'SC'
+    if (storeCurrency === "SC" || storeCurrency === "GC") {
+      return storeCurrency;
+    }
+    return "SC"; 
+  },
 
 balances() {
   const wallet = this.authUser?.user?.wallet || { sc: 0, gc: 0 };
@@ -361,6 +364,11 @@ balance() {
   },
   mounted() {
     this.playingSlots = !!this.$route.matched.find((m) => m.name === "Slot");
+    // CORRECCIÓN AL MONTAR: Si la moneda guardada en el sistema es inválida, la reseteamos a SC
+    const currentStoreCurrency = this.$store.getters.selectedCurrency;
+    if (currentStoreCurrency !== "SC" && currentStoreCurrency !== "GC") {
+    this.setCurrency("SC");
+    }
 
   },
   watch: {
@@ -491,6 +499,18 @@ beforeDestroy() {
     },
   },
   watch: {
+    "authUser.user": {
+    immediate: true,
+    handler(newUser) {
+      if (newUser) {
+        const currentStoreCurrency = this.$store.getters.selectedCurrency;
+        // Si al loguearse la moneda actual sigue siendo DLS o vacía, obligamos a cambiar a SC
+        if (currentStoreCurrency !== "SC" && currentStoreCurrency !== "GC") {
+          this.setCurrency("SC");
+        }
+      }
+    }
+  },
     balanceDLS: {
       handler: function (newValue, oldValue) {
         newValue = this.getFloatBalance(

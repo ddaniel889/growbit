@@ -12,6 +12,7 @@ const quickGameSchema = new mongoose.Schema(
       seed: { type: mongoose.Schema.ObjectId, ref: "UserSeed" },
     },
     user: { type: mongoose.Schema.ObjectId, ref: "User" },
+    currency: { type: String },
   },
   { timestamps: true },
 );
