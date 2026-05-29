@@ -16,7 +16,7 @@ module.exports = (io) => {
         console.log(JSON.stringify(req.body, null, 2));
         try {
             const paymentData = req.body;
-          //  const hmac = req.headers['x-nowpayments-sig'];
+            const hmac = req.headers['x-nowpayments-sig'];
 
             // 1. VALIDACIÓN DE SEGURIDAD RECOMENDADA POR NOWPAYMENTS
            const checkHmac = crypto
