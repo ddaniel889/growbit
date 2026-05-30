@@ -122,18 +122,18 @@
   <div v-if="game.amount" class="money">
     {{ getDisplayCurrencyAmountFormatted(game.amount) }}
     
-    <img 
-      v-if="game.currency === 'sc'" 
-      src="/img/currencies/sc_icon.png" 
-      alt="SC" 
-      class="table-coin-icon" 
-    />
-    <img 
-      v-else-if="game.currency === 'gc'" 
-      src="/img/currencies/gc_icon.png" 
-      alt="GC" 
-      class="table-coin-icon" 
-    />
+   <img 
+    v-if="(game.currency || 'sc').toLowerCase() === 'sc'" 
+    src="/img/currencies/sc_icon.png" 
+    alt="SC" 
+    class="table-coin-icon" 
+  />
+  <img 
+    v-else-if="(game.currency || 'sc').toLowerCase() === 'gc'" 
+    src="/img/currencies/gc_icon.png" 
+    alt="GC" 
+    class="table-coin-icon" 
+  />
     <Currency v-else></Currency>
   </div>
   <div v-else class="money" :class="game.data.box">
