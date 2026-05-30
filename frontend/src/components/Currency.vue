@@ -12,25 +12,22 @@ import { mapGetters } from "vuex";
 export default {
   name: "Currency",
   props: {
-    // Agregamos este prop
     currency: {
       type: String,
       default: null
     }
   },
-  components: {},
-  data() {
-    return {};
-  },
-  methods: {},
   computed: {
     ...mapGetters(["generalSettings", "authUser", "selectedCurrency"]),
     displayCurrency() {
-      // Prioridad: 1. Prop pasado al componente, 2. Selección global
-      return this.currency || this.selectedCurrency;
+      // 1. Tomamos el prop o la moneda global seleccionada
+      const currencyValue = this.currency || this.selectedCurrency;
+      
+      // 2. Si por alguna razón es null/undefined, aseguramos un fallback (ej: 'sc')
+      // 3. Aplicamos toLowerCase() para evitar problemas con Linux/Render
+      return currencyValue ? currencyValue.toLowerCase() : 'sc';
     }
-  },
-  created() {},
+  }
 };
 </script>
 
@@ -38,5 +35,6 @@ export default {
 img.currency {
   height: 20px;
   width: 20px;
+  vertical-align: middle; /* Pequeño ajuste por si se desalinea en los inputs */
 }
 </style>
