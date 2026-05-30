@@ -119,9 +119,9 @@ axios.interceptors.response.use(
      require("./services/challenges")
         .initChallenges()
         .catch((e) => console.error("Failed to init challenges:", e.message));
-      require("./services/bots")
-        .init(io)
-        .catch((e) => console.error("Failed to init bots:", e.message));
+     // require("./services/bots")
+        //.init(io)
+        //.catch((e) => console.error("Failed to init bots:", e.message));
       require("./services/boxLoader")
         .initBoxes()
         .catch((e) => console.error("Failed to init boxes:", e.message));

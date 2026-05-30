@@ -92,9 +92,15 @@ export default {
       return result > 0 ? result.toFixed(2) : "0.00";
     },
     
+    userBalanceSc() {
+      return this.$store.state.auth.user?.wallet?.sc || 0;
+    },
+
     // Validación para el botón
     canWithdraw() {
-      return this.amount > this.currentNetworkFee;
+      // 1. El monto debe superar la comisión de red
+      // 2. El monto ingresado NO debe superar el saldo disponible en la wallet
+      return this.amount > this.currentNetworkFee && this.amount <= this.userBalanceSc;
     }
   },
   components: { AppButton, Currency },
@@ -157,10 +163,21 @@ export default {
   async handleWithdraw() {
       // 1. Validaciones de UI iniciales
       if (this.amount < 10) return;
+
+      
+
+      if (this.amount > this.userBalanceSc) {
+        this.notificationShow({
+          type: "error",
+          message: "You do not have enough available balance in SC to make this withdrawal."
+        });
+        return;
+      }
+
       if (!this.isValidAddress(this.walletAddress, this.selectedNetwork)) {
         this.notificationShow({
           type: "error",
-          message: `Dirección inválida para la red ${this.selectedNetwork.toUpperCase()}.`
+          message: `Invalid address for the network ${this.selectedNetwork.toUpperCase()}.`
         });
         return;
       }
