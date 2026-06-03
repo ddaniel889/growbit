@@ -39,19 +39,27 @@ const crashCheckSendBetData = (data) => {
 };
 
 const crashCheckSendBetUser = (data, user, crashBets) => {
-   const hasEnoughBalance = user.balance >= data.amount;
-   const hasEnoughSC = user.wallet && user.wallet.sc >= data.amount;
-   const hasEnoughGC = user.wallet && user.wallet.gc >= data.amount;
 
-  if (!hasEnoughSC) {
-    throw new Error("You don’t have enough balance for this action.");
-  } else if (
+  const currencyKey = data.currency ? data.currency.toLowerCase() : 'gc';
+
+  if (!user.wallet || user.wallet[currencyKey] === undefined) {
+    throw new Error("User wallet configuration is invalid.");
+  }
+
+  const hasEnoughBalance = Number(user.wallet[currencyKey]) >= Number(data.amount);
+
+  if (!hasEnoughBalance) {
+    throw new Error(`You don't have enough ${currencyKey.toUpperCase()} balance for this action.`);
+  }
+
+  if (
     crashBets.some(
       (element) => element.user._id.toString() === user._id.toString(),
     ) === true
   ) {
     throw new Error("You can only bet one time per round.");
   }
+
 };
 
 const crashCheckSendBetGame = (crashGame) => {

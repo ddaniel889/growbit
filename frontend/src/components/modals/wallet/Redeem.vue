@@ -58,7 +58,7 @@
   <app-button 
       :fullwidth="true" 
       :click="handleWithdraw" 
-      :disabled="amount < 10 || !walletAddress  || !canWithdraw"
+      :disabled="amount < 10 || !walletAddress || !canWithdraw"
       :height="'50px'"
     >
         {{ loading ? 'Processing...' : 'Withdraw SC' }}
@@ -72,7 +72,7 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import AppButton from "@/components/AppButton.vue";
 import Currency from "@/components/Currency.vue";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -86,6 +86,9 @@ export default {
     };
   },
   computed: {
+        ...mapGetters([
+      "authUser"
+    ]),
     estimatedReceived() {
       // Nota que usamos "this" para acceder a la data
       const result = this.amount - this.currentNetworkFee;
@@ -93,7 +96,7 @@ export default {
     },
     
     userBalanceSc() {
-      return this.$store.state.auth.user?.wallet?.sc || 0;
+      return this.authUser?.user?.wallet?.sc || 0;
     },
 
     // Validación para el botón
@@ -120,7 +123,7 @@ export default {
 }
 ,
   methods: {
-    ...mapActions(["notificationShow","modalsSetShow"]),
+    ...mapActions(["notificationShow","modalsSetShow"]),//
 
     isValidAddress(address, network) {
       const regexMap = {
@@ -164,7 +167,8 @@ export default {
       // 1. Validaciones de UI iniciales
       if (this.amount < 10) return;
 
-      
+        console.log('this.amount',this.amount)
+        console.log('this.userBalanceSc',this.userBalanceSc)
 
       if (this.amount > this.userBalanceSc) {
         this.notificationShow({
@@ -188,6 +192,7 @@ export default {
         // 2. Consulta de Custodia antes de procesar
         const balanceRes = await axios.get(`${process.env.VUE_APP_BACKEND_URL}/custody_balance`);
         const balances = balanceRes.data;
+        console.log('BALANCES',balances)
 
         // Mapeo de tu select al ticker de la API de NOWPayments
        const tickerMap = {
@@ -206,7 +211,7 @@ export default {
         if (availableInCustody <= 0 || availableInCustody < (this.amount)) {
           this.notificationShow({
             type: "error",
-            message: `There are not enough funds in the network ${this.selectedNetwork.toUpperCase()} para procesar este retiro.`
+            message: `There are not enough funds in the network ${this.selectedNetwork.toUpperCase()} to process this withdrawal.`
           });
           this.loading = false;
           return;

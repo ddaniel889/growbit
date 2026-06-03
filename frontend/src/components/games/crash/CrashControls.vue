@@ -35,24 +35,24 @@
           <div class="controls-cashout">
             <input
               v-model="crashAutoCashout"
-              v-on:input="crashValidateInputCashout"
-              v-on:change="crashFormatInputCashout"
+              @input="crashValidateInputCashout"
+              @change="crashFormatInputCashout"
               type="text"
               placeholder="Multiplier"
-              v-bind:disabled="crashAutoRunning === true"
+              :disabled="crashAutoRunning === true"
             />
             <div class="cashout-buttons">
               <button
-                v-on:click="crashSetInput('crashAutoCashout', 'increase')"
-                v-bind:disabled="crashAutoRunning === true"
+                @click="crashSetInput('crashAutoCashout', 'increase')"
+                :disabled="crashAutoRunning === true"
               >
                 <img src="../../../assets/images/iconup.png" alt="up" />
               </button>
               <button
-                v-on:click="crashSetInput('crashAutoCashout', 'decrease')"
-                v-bind:disabled="crashAutoRunning === true"
+                @click="crashSetInput('crashAutoCashout', 'decrease')"
+                :disabled="crashAutoRunning === true"
               >
-                <img src="../../../assets/images/icondown.png" alt="up" />
+                <img src="../../../assets/images/icondown.png" alt="down" />
               </button>
             </div>
           </div>
@@ -62,38 +62,39 @@
           <div class="controls-repeat">
             <input
               v-model="crashAutoBetCount"
-              v-on:input="crashValidateAutoBetCount"
-              v-on:change="crashFormatInputAutoBet"
+              @input="crashValidateAutoBetCount"
+              @change="crashFormatInputAutoBet"
               type="text"
               placeholder="Count"
-              v-bind:disabled="crashAutoRunning === true"
+              :disabled="crashAutoRunning === true"
             />
           </div>
         </div>
       </div>
+      
       <div v-else>
         <div class="controls-cashout-title">Cashout At</div>
         <div class="controls-cashout">
           <input
             v-model="crashAutoCashout"
-            v-on:input="crashValidateInputCashout"
-            v-on:change="crashFormatInputCashout"
+            @input="crashValidateInputCashout"
+            @change="crashFormatInputCashout"
             type="text"
             placeholder="Multiplier"
-            v-bind:disabled="crashAutoRunning === true"
+            :disabled="crashAutoRunning === true"
           />
           <div class="cashout-buttons">
             <button
-              v-on:click="crashSetInput('crashAutoCashout', 'increase')"
-              v-bind:disabled="crashAutoRunning === true"
+              @click="crashSetInput('crashAutoCashout', 'increase')"
+              :disabled="crashAutoRunning === true"
             >
               <img src="../../../assets/images/iconup.png" alt="up" />
             </button>
             <button
-              v-on:click="crashSetInput('crashAutoCashout', 'decrease')"
-              v-bind:disabled="crashAutoRunning === true"
+              @click="crashSetInput('crashAutoCashout', 'decrease')"
+              :disabled="crashAutoRunning === true"
             >
-              <img src="../../../assets/images/icondown.png" alt="up" />
+              <img src="../../../assets/images/icondown.png" alt="down" />
             </button>
           </div>
         </div>
@@ -101,26 +102,18 @@
 
       <div v-if="crashMode === 'manual'" class="controls-manual">
         <button
-          v-if="
-            authUser.user !== null &&
-            crashGame !== null &&
-            crashGame.state !== 'completed' &&
-            crashBets.some(
-              (element) =>
-                element.user._id === authUser.user._id &&
-                element.multiplier === undefined
-            ) === true
-          "
-          v-on:click="crashBetCashout"
+          v-if="hasActiveBet"
+          @click="crashBetCashout"
           class="betting-btn"
-          v-bind:disabled="crashGame.state !== 'rolling'"
+          :disabled="!crashGame || crashGame.state !== 'rolling'"
         >
-          {{ crashGame.state !== "rolling" ? "Starting..." : "Cashout" }}
+          {{ !crashGame || crashGame.state !== 'rolling' ? "Starting..." : "Cashout" }}
         </button>
-        <button v-else v-on:click="crashBetButton" class="betting-btn">
+        <button v-else @click="crashBetButton" class="betting-btn">
           Play
         </button>
       </div>
+      
       <div v-else class="controls-auto">
         <div class="controls-cashout-title">On win</div>
         <div class="auto-bet-controls">
@@ -132,20 +125,22 @@
           </button>
           <button
             :class="crashAutoPercentageWin ? 'active' : ''"
-            @click="crashAutoPercentageWin = 1"
+            @click="crashAutoPercentageWin = 100"
           >
             Increase
           </button>
-          <span class="input-append-percent"
-            ><input
+          <span class="input-append-percent">
+            <input
               type="text"
               v-model="crashAutoPercentageWin"
-              v-on:input="crashValidateAutoPercentageWin"
-              v-on:change="crashFormatInputAutoPercentageWin"
-              v-bind:disabled="crashAutoRunning === true" />
-            <img src="../../../assets/images/percentage.svg" alt="%"
-          /></span>
+              @input="crashValidateAutoPercentageWin"
+              @change="crashFormatInputAutoPercentageWin"
+              :disabled="crashAutoRunning === true" 
+            />
+            <img src="../../../assets/images/percentage.svg" alt="%" />
+          </span>
         </div>
+        
         <div class="controls-cashout-title">On loss</div>
         <div class="auto-bet-controls">
           <button
@@ -156,59 +151,53 @@
           </button>
           <button
             :class="crashAutoPercentageLoss ? 'active' : ''"
-            @click="crashAutoPercentageLoss = 1"
+            @click="crashAutoPercentageLoss = 100"
           >
             Increase
           </button>
-          <span class="input-append-percent"
-            ><input
+          <span class="input-append-percent">
+            <input
               type="text"
               v-model="crashAutoPercentageLoss"
-              v-on:input="crashValidateAutoPercentageWin"
-              v-on:change="crashFormatInputAutoPercentageWin"
-              v-bind:disabled="crashAutoRunning === true" />
-            <img src="../../../assets/images/percentage.svg" alt="%"
-          /></span>
+              @input="crashValidateAutoPercentageLoss"
+              @change="crashFormatInputAutoPercentageLoss"
+              :disabled="crashAutoRunning === true" 
+            />
+            <img src="../../../assets/images/percentage.svg" alt="%" />
+          </span>
         </div>
+        
         <div class="controls-cashout-title">Stop on profit</div>
         <div class="stop-profit input-wrapper">
           <input
             v-model="crashAutoStopProfit"
             type="text"
             placeholder="Stop on profit"
-            v-bind:disabled="crashAutoRunning === true"
+            :disabled="crashAutoRunning === true"
           />
           <Currency />
         </div>
+        
         <div class="controls-cashout-title">Stop on loss</div>
-
         <div class="stop-lose input-wrapper">
           <input
             v-model="crashAutoStopLoss"
             type="text"
             placeholder="Stop on loss"
-            v-bind:disabled="crashAutoRunning === true"
+            :disabled="crashAutoRunning === true"
           />
           <Currency />
         </div>
-        <!--      <div class="controls-cashout-title">Number of bets</div>-->
 
-        <!--      <div class="auto-count input-wrapper">-->
-        <!--        <input-->
-        <!--          v-model="crashAutoBetCount"-->
-        <!--          type="text"-->
-        <!--          placeholder="Number of bets"-->
-        <!--        />-->
-        <!--      </div>-->
         <div class="btn-wrapper">
           <button
             v-if="crashAutoRunning === true"
-            v-on:click="crashAutoStopButton"
+            @click="crashAutoStopButton"
             class="betting-btn button-stop"
           >
             Stop Autobetting
           </button>
-          <button v-else v-on:click="crashAutoStartButton" class="betting-btn">
+          <button v-else @click="crashAutoStartButton" class="betting-btn">
             Start Autobetting
           </button>
         </div>
@@ -218,8 +207,8 @@
         <div class="content-list">
           <CrashBetElement
             v-for="bet of crashBets"
-            v-bind:key="bet._id"
-            v-bind:bet="bet"
+            :key="bet._id"
+            :bet="bet"
           />
         </div>
       </div>
@@ -257,276 +246,7 @@ export default {
       crashAutoBetCount: null,
       crashAutoTotalBet: 0,
       crashAutoTotalWon: 0,
-      tempimage: "dfa",
     };
-  },
-  methods: {
-    ...mapActions([
-      "notificationShow",
-      "crashSendBetSocket",
-      "crashSendCashoutSocket",
-    ]),
-    getBalanceInSelectedCurrency(balance) {
-      // console.log("balance is " + balance);
-      // console.log("fiat rate is: " + this.fiatRates.data[this.selectedCurrency]);
-      return this.fiatRates.data[this.selectedCurrency] * balance;
-    },
-    crashSetMode(mode) {
-      if (mode === "manual") {
-        this.crashAutoStopButton();
-      }
-      this.crashMode = mode;
-    },
-    crashValidateInputCashout() {
-      this.crashAutoCashout = this.crashAutoCashout
-        .replace(",", ".")
-        .replace(/[^\d.]/g, "");
-      this.crashAutoCashout =
-        this.crashAutoCashout.indexOf(".") >= 0
-          ? this.crashAutoCashout.substr(
-              0,
-              this.crashAutoCashout.indexOf(".")
-            ) +
-            "." +
-            this.crashAutoCashout
-              .substr(this.crashAutoCashout.indexOf(".") + 1, 2)
-              .replace(".", "")
-          : this.crashAutoCashout;
-    },
-    crashValidateAutoBetCount() {
-      this.crashAutoBetCount = this.crashAutoBetCount
-        .replace(",", ".")
-        .replace(/[^\d.]/g, "");
-      this.crashAutoBetCount =
-        this.crashAutoBetCount.indexOf(".") >= 0
-          ? this.crashAutoBetCount.substr(
-              0,
-              this.crashAutoBetCount.indexOf(".")
-            )
-          : this.crashAutoBetCount;
-    },
-    crashValidateAutoPercentageWin() {
-      this.crashAutoPercentageWin = this.crashAutoPercentageWin
-        .replace(",", ".")
-        .replace(/[^\d.]/g, "");
-      this.crashAutoPercentageWin =
-        this.crashAutoPercentageWin.indexOf(".") >= 0
-          ? this.crashAutoPercentageWin.substr(
-              0,
-              this.crashAutoPercentageWin.indexOf(".")
-            )
-          : this.crashAutoPercentageWin;
-      // this.crashAutoPercentageWin = Number(this.crashAutoPercentageWin);
-    },
-    crashValidateAutoPercentageLoss() {
-      this.crashAutoPercentageLoss = this.crashAutoPercentageLoss
-        .replace(",", ".")
-        .replace(/[^\d.]/g, "");
-      this.crashAutoPercentageLoss =
-        this.crashAutoPercentageLoss.indexOf(".") >= 0
-          ? this.crashAutoPercentageLoss.substr(
-              0,
-              this.crashAutoPercentageLoss.indexOf(".")
-            )
-          : this.crashAutoPercentageLoss;
-      //  this.crashAutoPercentageLoss = Number(this.crashAutoPercentageLoss);
-    },
-    crashFormatInputCashout() {
-      this.crashAutoCashout = Number(this.crashAutoCashout).toFixed(2);
-    },
-    crashFormatInputAutoBet() {
-      this.crashAutoBetCount = Number(this.crashAutoBetCount);
-    },
-    crashFormatInputAutoPercentageWin() {
-      this.crashAutoPercentageWin = Number(this.crashAutoPercentageWin);
-    },
-    crashFormatInputAutoPercentageLoss() {
-      this.crashAutoPercentageLoss = Number(this.crashAutoPercentageLoss);
-    },
-    crashSetInput(value, action) {
-      let amount = parseFloat(this[value]);
-      if (action === "increase") {
-        amount = amount + 1;
-      } else if (action === "decrease") {
-        amount = amount - 1;
-      }
-      if (amount <= 1) {
-        amount = 1.01;
-      }
-      this[value] = parseFloat(amount).toFixed(2);
-    },
-    crashAutoStartButton() {
-      const percentageWin = this.crashAutoPercentageWin;
-      const percentageLoss = this.crashAutoPercentageLoss;
-
-      if (
-        isNaN(+percentageWin) === true ||
-        percentageWin < 0 ||
-        percentageWin > 100
-      ) {
-        this.notificationShow({
-          type: "error",
-          message: "Your entered auto bet win percentage is invalid.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      if (
-        isNaN(+percentageLoss) === true ||
-        percentageLoss < 0 ||
-        percentageLoss > 100
-      ) {
-        this.notificationShow({
-          type: "error",
-          message: "Your entered auto bet loss percentage is invalid.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      if (isNaN(+this.crashAutoStopProfit) === true) {
-        this.notificationShow({
-          type: "error",
-          message: "Your entered auto bet profit stop is invalid.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      if (isNaN(+this.crashAutoStopLoss) === true) {
-        this.notificationShow({
-          type: "error",
-          message: "Your entered auto bet loss stop is invalid.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      if (isNaN(Math.floor(this.crashAutoBetCount)) === true) {
-        this.notificationShow({
-          type: "error",
-          message: "Your entered auto bet count is invalid.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      if (Math.floor(this.crashAutoBetCount) === 0) {
-        this.crashAutoInfinite = true;
-      }
-
-      this.crashAutoRunning = true;
-      if (this.crashGame.state === "created") {
-        this.crashBetButton();
-      }
-    },
-    crashAutoStopButton() {
-      this.crashAutoTotalBet = 0;
-      this.crashAutoTotalWon = 0;
-      this.crashAutoInfinite = false;
-      this.crashAutoRunning = false;
-    },
-    crashBetButton() {
-      if (this.socketSendLoading !== null) {
-        return;
-      }
-
-      if (this.authUser.user === null) {
-        this.notificationShow({
-          type: "error",
-          message: "Please sign in to perform this action.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      const amount = this.crashAmount;
-      //  console.log("crash bet button");
-      //   console.log("bet amount is " + amount);
-      //   console.log("type of bet amount is" + typeof(amount));
-      //   console.log(amount < 0);
-      const autoCashout =
-        this.crashAutoCashout === null || this.crashAutoCashout.trim() === ""
-          ? 0
-          : this.crashAutoCashout;
-
-      if (amount === null || isNaN(amount) === true || amount <= 0) {
-        this.notificationShow({
-          type: "error",
-          message: "Your entered bet amount is invalid.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      if (
-        autoCashout === null ||
-        isNaN(autoCashout) === true ||
-        ((autoCashout !== 0 || this.crashMode === "auto") && autoCashout <= 1)
-      ) {
-        this.notificationShow({
-          type: "error",
-          message: "Your entered bet auto cashout is invalid.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      const currentBalance = this.getBalanceInSelectedCurrency(
-        this.authUser.user.balance
-      );
-
-      if (Number(this.crashAmount) > currentBalance) {
-        this.notificationShow({
-          type: "error",
-          message: "Insufficient funds.",
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      //   console.log(Number(this.crashAmount));
-      // console.log(this.gameConfig);
-      //   console.log(this.getBalanceInSelectedCurrency(Number(this.gameConfig.crashMaxBet)));
-      if (
-        Number(this.crashAmount) >
-        this.getBalanceInSelectedCurrency(Number(this.gameConfig.crashMaxBet))
-      ) {
-        this.notificationShow({
-          type: "error",
-          message:
-            "Maximum allowed bet is " +
-            this.getBalanceInSelectedCurrency(
-              Number(this.gameConfig.crashMaxBet)
-            ) +
-            " " +
-            this.selectedCurrency,
-        });
-        this.crashAutoStopButton();
-        return;
-      }
-
-      const dlsAmount = this.getDlsAmountForBetting(amount);
-      const data = { amount: dlsAmount, autoCashout: autoCashout };
-      this.crashSendBetSocket(data);
-    },
-    crashBetCashout() {
-      if (this.socketSendLoading !== null) {
-        return;
-      }
-
-      if (this.authUser.user === null) {
-        this.notificationShow({
-          type: "error",
-          message: "Please sign in to perform this action.",
-        });
-        return;
-      }
-
-      const data = {};
-      this.crashSendCashoutSocket(data);
-    },
   },
   computed: {
     ...mapGetters([
@@ -537,46 +257,208 @@ export default {
       "gameConfig",
       "fiatRates",
       "selectedCurrency",
-      "gameConfig",
     ]),
     maxBet() {
-      return this.gameConfig.crashMaxBet;
+      return this.gameConfig?.crashMaxBet || 0;
+    },
+    hasActiveBet() {
+      return (
+        this.authUser?.user !== null &&
+        this.crashGame !== null &&
+        this.crashGame.state !== 'completed' &&
+        this.crashBets &&
+        this.crashBets.some(
+          (element) => element.user?._id === this.authUser.user._id && element.multiplier === undefined
+        )
+      );
+    }
+  },
+  methods: {
+    ...mapActions([
+      "notificationShow",
+      "crashSendBetSocket",
+      "crashSendCashoutSocket",
+    ]),
+    getBalanceInSelectedCurrency(balance) {
+      if(!this.fiatRates?.data || !this.selectedCurrency) return balance;
+      return this.fiatRates.data[this.selectedCurrency] * balance;
+    },
+    crashSetMode(mode) {
+      if (mode === "manual") {
+        this.crashAutoStopButton();
+      }
+      this.crashMode = mode;
+    },
+    sanitizeInput(val, allowDecimal = true) {
+      let cleaned = val.replace(",", ".").replace(/[^\d.]/g, "");
+      if (allowDecimal) {
+        const parts = cleaned.split(".");
+        if (parts.length > 2) cleaned = parts[0] + "." + parts.slice(1).join("").replace(/\./g, "");
+        if (parts.length > 1) cleaned = parts[0] + "." + parts[1].substring(0, 2);
+      } else {
+        cleaned = cleaned.replace(/\./g, "");
+      }
+      return cleaned;
+    },
+    crashValidateInputCashout() {
+      this.crashAutoCashout = this.sanitizeInput(this.crashAutoCashout, true);
+    },
+    crashValidateAutoBetCount() {
+      this.crashAutoBetCount = this.sanitizeInput(this.crashAutoBetCount, false);
+    },
+    crashValidateAutoPercentageWin() {
+      this.crashAutoPercentageWin = this.sanitizeInput(this.crashAutoPercentageWin, false);
+    },
+    crashValidateAutoPercentageLoss() {
+      this.crashAutoPercentageLoss = this.sanitizeInput(this.crashAutoPercentageLoss, false);
+    },
+    crashFormatInputCashout() {
+      this.crashAutoCashout = this.crashAutoCashout ? Number(this.crashAutoCashout).toFixed(2) : "2.00";
+    },
+    crashFormatInputAutoBet() {
+      this.crashAutoBetCount = this.crashAutoBetCount ? Math.floor(Number(this.crashAutoBetCount)) : null;
+    },
+    crashFormatInputAutoPercentageWin() {
+      this.crashAutoPercentageWin = this.crashAutoPercentageWin ? Number(this.crashAutoPercentageWin) : null;
+    },
+    crashFormatInputAutoPercentageLoss() {
+      this.crashAutoPercentageLoss = this.crashAutoPercentageLoss ? Number(this.crashAutoPercentageLoss) : null;
+    },
+    crashSetInput(value, action) {
+      let amount = parseFloat(this[value]) || 0;
+      amount = action === "increase" ? amount + 1 : amount - 1;
+      if (amount <= 1) amount = 1.01;
+      this[value] = parseFloat(amount).toFixed(2);
+    },
+    crashAutoStartButton() {
+      const percentageWin = Number(this.crashAutoPercentageWin);
+      const percentageLoss = Number(this.crashAutoPercentageLoss);
+
+      if (this.crashAutoPercentageWin !== null && (isNaN(percentageWin) || percentageWin < 0)) {
+        this.showError("Your entered auto bet win percentage is invalid.");
+        return;
+      }
+      if (this.crashAutoPercentageLoss !== null && (isNaN(percentageLoss) || percentageLoss < 0)) {
+        this.showError("Your entered auto bet loss percentage is invalid.");
+        return;
+      }
+      if (this.crashAutoStopProfit && isNaN(Number(this.crashAutoStopProfit))) {
+        this.showError("Your entered auto bet profit stop is invalid.");
+        return;
+      }
+      if (this.crashAutoStopLoss && isNaN(Number(this.crashAutoStopLoss))) {
+        this.showError("Your entered auto bet loss stop is invalid.");
+        return;
+      }
+
+      const count = Math.floor(Number(this.crashAutoBetCount));
+      if (this.crashAutoBetCount !== null && isNaN(count)) {
+        this.showError("Your entered auto bet count is invalid.");
+        return;
+      }
+
+      this.crashAutoInfinite = !this.crashAutoBetCount || count === 0;
+      this.crashAutoRunning = true;
+
+      if (this.crashGame?.state === "created") {
+        this.crashBetButton();
+      }
+    },
+    crashAutoStopButton() {
+      this.crashAutoTotalBet = 0;
+      this.crashAutoTotalWon = 0;
+      this.crashAutoInfinite = false;
+      this.crashAutoRunning = false;
+    },
+    showError(msg) {
+      this.notificationShow({ type: "error", message: msg });
+      this.crashAutoStopButton();
+    },
+   crashBetButton() {
+  // 1. Evitar peticiones concurrentes si el socket está cargando
+  if (this.socketSendLoading !== null) return;
+
+  // 2. Verificar que el usuario esté autenticado y su wallet exista
+  if (!this.authUser?.user || !this.authUser.user.wallet) {
+    this.showError("Please sign in to perform this action.");
+    return;
+  }
+
+  // 3. Limpiar y parsear valores de entrada del componente
+  const amount = Number(this.crashAmount);
+  const autoCashout = !this.crashAutoCashout || this.crashAutoCashout.toString().trim() === "" 
+    ? 0 
+    : Number(this.crashAutoCashout);
+
+  // 4. Validaciones matemáticas estándar de los inputs
+  if (isNaN(amount) || amount <= 0) {
+    this.showError("Your entered bet amount is invalid.");
+    return;
+  }
+
+  if (isNaN(autoCashout) || ((autoCashout !== 0 || this.crashMode === "auto") && autoCashout <= 1)) {
+    this.showError("Your entered bet auto cashout is invalid.");
+    return;
+  }
+
+  // ============================================================
+  // ADAPTACIÓN DUAL WALLET: DETECTAR Y VALIDAR GC / SC
+  // ============================================================
+
+  // Identificamos de forma segura la moneda activa ("gc" o "sc") en minúsculas
+  const currencyKey = this.selectedCurrency ? this.selectedCurrency.toLowerCase() : "gc";
+  
+  // Obtenemos los fondos disponibles directamente de la billetera correspondiente
+  const currentWalletBalance = Number(this.authUser.user.wallet[currencyKey]) || 0;
+
+  // Validar si el monto que se ingresó en el BetAmount supera lo que hay en esa billetera específica
+  if (amount > currentWalletBalance) {
+    this.showError(`Insufficient funds. Your ${currencyKey.toUpperCase()} balance is ${currentWalletBalance.toFixed(2)}`);
+    return;
+  }
+
+  // Validar el límite máximo permitido (asumiendo que maxBet ya viene en la unidad correcta para el juego)
+  const maxBetAllowed = Number(this.maxBet);
+  if (amount > maxBetAllowed) {
+    this.showError(`Maximum allowed bet is ${maxBetAllowed} ${currencyKey.toUpperCase()}`);
+    return;
+  }
+
+  // ============================================================
+  // ENVÍO DE DATA ESTRUCTURADA AL BACKEND
+  // ============================================================
+
+  // Empaquetamos la carga incluyendo explícitamente el tipo de billetera 
+  // para que el controlador del backend sepa de dónde debitar el balance.
+  const payload = { 
+    amount: amount,              // El monto directo ingresado para GC/SC
+    currency: currencyKey,       // 'gc' o 'sc'
+    autoCashout: autoCashout 
+  };
+
+  this.crashSendBetSocket(payload);
+},
+    crashBetCashout() {
+      if (this.socketSendLoading !== null || !this.authUser?.user) return;
+      this.crashSendCashoutSocket({});
     },
   },
   watch: {
     crashGame: {
-      handler(data, dataOld) {
-        if (data.state === "created" && this.crashAutoRunning === true) {
+      handler(data) {
+        if (data?.state === "created" && this.crashAutoRunning) {
           const profit = this.crashAutoTotalWon - this.crashAutoTotalBet;
-          //   console.log("auto infite is " + this.crashAutoInfinite);
-          //   console.log("auto bet count is: " + this.crashAutoBetCount);
-          //   console.log("auto stop profit is: " + this.crashAutoStopProfit);
-          //   console.log("AutoStopProfit is: " + this.crashAutoStopProfit + " type is " + typeof(this.crashAutoStopProfit));
-          //   console.log("Is AutoStopProfit equal to 0 " + (this.crashAutoStopProfit === 0));
-          //   console.log("profit is: " + profit);
-          //   console.log("auto stop loss is: " + this.crashAutoStopLoss);
-          //   console.log((this.crashAutoStopLoss === 0 ||
-          //       profit >= 0 ||
-          //       profit < -this.crashAutoStopLoss)
-          //   );
-          //   console.log((this.crashAutoStopProfit === 0 ||
-          //       profit <= 0 ||
-          //       profit < this.crashAutoStopProfit));
-          //   console.log((this.crashAutoInfinite === true || this.crashAutoBetCount > 0));
-          //console.log(this.crashAutoInfinite);
-          if (
-            (this.crashAutoInfinite === true ||
-              Number(this.crashAutoBetCount) > 0) &&
-            (Number(this.crashAutoStopProfit) === 0 ||
-              Number(profit) <= 0 ||
-              Number(profit) < Number(this.crashAutoStopProfit)) &&
-            (Number(this.crashAutoStopLoss) === 0 ||
-              Number(profit) >= 0 ||
-              Number(profit) < Number(-this.crashAutoStopLoss))
-          ) {
+          const count = Number(this.crashAutoBetCount);
+          const stopProfit = Number(this.crashAutoStopProfit) || 0;
+          const stopLoss = Number(this.crashAutoStopLoss) || 0;
+
+          const hasBetsLeft = this.crashAutoInfinite || count > 0;
+          const checkProfit = stopProfit === 0 || profit <= 0 || profit < stopProfit;
+          const checkLoss = stopLoss === 0 || profit >= 0 || profit > -stopLoss;
+
+          if (hasBetsLeft && checkProfit && checkLoss) {
             this.crashBetButton();
           } else {
-            // console.log("stopping autobet");
             this.crashAutoStopButton();
           }
         }
@@ -585,64 +467,37 @@ export default {
     },
     crashBets: {
       deep: true,
-      handler(data, dataOld) {
-        const index = data.findIndex(
-          (element) => element.user._id === this.authUser.user._id
-        );
-        if (index !== -1 && this.crashMode === "auto") {
-          const bet = data[index];
+      handler(data) {
+        if (!data || !this.authUser?.user || this.crashMode !== "auto") return;
 
-          if (bet.payout !== undefined) {
-            this.crashAutoTotalWon = this.crashAutoTotalWon + bet.payout;
-            if (bet.payout > 0) {
-              if (this.crashAutoPercentageWin) {
-                //  console.log(this.crashAmount);
-                //   console.log("bet type is " + typeof(this.crashAmount));
-                //   console.log(this.crashAutoPercentageWin);
-                //   console.log("autopercetageonwin type is " + typeof(this.crashAutoPercentageWin));
-                this.crashAmount =
-                  Number(this.crashAmount) +
-                  Number(this.crashAmount) *
-                    (Number(this.crashAutoPercentageWin) / 100);
-                this.crashAmount = Number(this.crashAmount).toFixed(2);
-                //  console.log("adjusted bet after win is: " + this.crashAmount);
-              } else {
-                this.crashAmount = this.crashOriginalAmount;
-              }
-            } else if (bet.payout === 0) {
-              if (this.crashAutoPercentageLoss) {
-                //   console.log(this.crashAmount);
-                //    console.log("bet type is " + typeof(this.crashAmount));
-                //     console.log(this.crashAutoPercentageLoss);
-                //      console.log("autopercetageonwin type is " + typeof(this.crashAutoPercentageLoss));
-                this.crashAmount =
-                  Number(this.crashAmount) +
-                  Number(this.crashAmount) *
-                    (Number(this.crashAutoPercentageLoss) / 100);
-                this.crashAmount = Number(this.crashAmount).toFixed(2);
-                //   console.log("adjusted bet after loss is: " + this.crashAmount);
-              } else {
-                this.crashAmount = this.crashOriginalAmount;
-              }
+        const bet = data.find((element) => element.user?._id === this.authUser.user._id);
+        if (!bet) return;
+
+        if (bet.payout !== undefined) {
+          this.crashAutoTotalWon += bet.payout;
+          if (bet.payout > 0) {
+            if (this.crashAutoPercentageWin) {
+              this.crashAmount = Number(this.crashAmount) * (1 + Number(this.crashAutoPercentageWin) / 100);
+              this.crashAmount = Number(this.crashAmount).toFixed(2);
+            } else {
+              this.crashAmount = this.crashOriginalAmount;
             }
           } else {
-            if (this.crashAutoBetCount > 0) {
-              this.crashAutoBetCount = this.crashAutoBetCount - 1;
+            if (this.crashAutoPercentageLoss) {
+              this.crashAmount = Number(this.crashAmount) * (1 + Number(this.crashAutoPercentageLoss) / 100);
+              this.crashAmount = Number(this.crashAmount).toFixed(2);
+            } else {
+              this.crashAmount = this.crashOriginalAmount;
             }
-            this.crashAutoTotalBet = this.crashAutoTotalBet + bet.amount;
           }
+        } else {
+          if (!this.crashAutoInfinite && this.crashAutoBetCount > 0) {
+            this.crashAutoBetCount -= 1;
+          }
+          this.crashAutoTotalBet += bet.amount;
         }
       },
     },
-    // crashAutoBetCount: {
-    //   handler(data, dataOld) {
-    //     if(data === 0) {
-    //       this.crashAutoInfinite = true;
-    //     } else {
-    //       this.crashAutoInfinite = false;
-    //     }
-    //   }
-    // }
   },
   beforeDestroy() {
     this.crashAutoRunning = false;

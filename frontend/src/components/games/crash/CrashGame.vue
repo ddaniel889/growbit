@@ -17,22 +17,10 @@
       </div>
       <div v-else-if="crashGame.state === 'rolling'" class="inner-rolling">
         <div class="rolling-multiplier">
-          <span class="gradient-green"
-            >{{ parseFloat(crashMultiplier).toFixed(2) }}x</span
-          >
+          <span class="gradient-green">{{ parseFloat(crashMultiplier).toFixed(2) }}x</span>
         </div>
         <transition name="fade">
-          <div
-            v-if="
-              authUser.user !== null &&
-              crashBets.some(
-                (element) =>
-                  element.user._id === authUser.user._id &&
-                  element.multiplier === undefined
-              ) === true
-            "
-            class="rolling-amount"
-          >
+          <div v-if="hasActiveBet" class="rolling-amount">
             <Currency />
             <div class="amount-value">
               <span>+{{ crashFormatValue(crashGetPayoutAmount) }}</span>
@@ -72,66 +60,77 @@ export default {
       return parseFloat(value).toFixed(2).toString();
     },
     crashStartTimer() {
-      const timeEnding =
-        new Date(this.crashGame.createdAt).getTime() + 1000 * 6;
-      const timeLeft =
-        (timeEnding - (new Date().getTime() + this.generalTimeDiff)) / 1000;
-
-      this.crashText = "Starting in " + timeLeft.toFixed(2) + "s";
+      if (!this.crashGame) return;
+      
+      const timeEnding = new Date(this.crashGame.createdAt).getTime() + 1000 * 6;
+      const timeLeft = (timeEnding - (new Date().getTime() + this.generalTimeDiff)) / 1000;
 
       if (timeLeft <= 0) {
         this.crashText = "Pending...";
+        cancelAnimationFrame(this.crashTimerRepeater);
       } else {
+        this.crashText = "Starting in " + timeLeft.toFixed(2) + "s";
         this.crashTimerRepeater = requestAnimationFrame(this.crashStartTimer);
       }
     },
     crashStartMutiplier() {
-      const elapsed =
-        new Date().getTime() +
-        this.generalTimeDiff -
-        new Date(this.crashGame.updatedAt).getTime();
-      this.crashMultiplier = Math.pow(Math.E, 0.00006 * elapsed);
-
-      if (this.crashGame?.state === "rolling") {
-        CrashGraph.Engine.multi = this.crashMultiplier;
+      if (!this.crashGame || this.crashGame.state !== "rolling") {
+        cancelAnimationFrame(this.crashRunRepeater);
+        return;
       }
 
+      const elapsed = new Date().getTime() + this.generalTimeDiff - new Date(this.crashGame.updatedAt).getTime();
+      this.crashMultiplier = Math.pow(Math.E, 0.00006 * elapsed);
+
+      CrashGraph.Engine.multi = this.crashMultiplier;
       this.crashRunRepeater = requestAnimationFrame(this.crashStartMutiplier);
     },
   },
   computed: {
     ...mapGetters(["authUser", "generalTimeDiff", "crashGame", "crashBets"]),
-    crashGetPayoutAmount() {
+    hasActiveBet() {
       return (
-        this.getDisplayCurrencyAmount(
-          this.crashBets[
-            this.crashBets.findIndex(
-              (element) => element.user._id === this.authUser.user._id
-            )
-          ].amount
-        ) * this.crashMultiplier
+        this.authUser?.user !== null &&
+        this.crashBets &&
+        this.crashBets.some(
+          (element) => element.user?._id === this.authUser.user._id && element.multiplier === undefined
+        )
       );
+    },
+    crashGetPayoutAmount() {
+      if (!this.authUser?.user || !this.crashBets) return 0;
+      
+      const activeBet = this.crashBets.find(
+        (element) => element.user?._id === this.authUser.user._id
+      );
+      
+      if (!activeBet) return 0;
+      
+      return this.getDisplayCurrencyAmount(activeBet.amount) * this.crashMultiplier;
     },
   },
   watch: {
     crashGame: {
-      handler(data, oldData) {
+      handler(data) {
         if (!data) return;
 
         if (data.state === "created") {
           CrashGraph.Engine.multi = 1.0001;
           CrashGraph.Engine.gameState = "STARTING";
           cancelAnimationFrame(this.crashRunRepeater);
+          cancelAnimationFrame(this.crashTimerRepeater);
           this.crashStartTimer();
         } else if (data.state === "rolling") {
           CrashGraph.Engine.gameState = "IN_PROGRESS";
           CrashGraph.Engine.multi = 1.0001;
-       
           this.crashMultiplier = 1.0001;
+          cancelAnimationFrame(this.crashTimerRepeater);
+          cancelAnimationFrame(this.crashRunRepeater);
           this.crashStartMutiplier();
         } else if (data.state === "completed") {
           CrashGraph.Engine.gameState = "ENDED";
-          //cancelAnimationFrame(this.crashRunRepeater);
+          cancelAnimationFrame(this.crashRunRepeater);
+          cancelAnimationFrame(this.crashTimerRepeater);
         }
       },
       deep: true,
@@ -148,22 +147,24 @@ export default {
 
     CrashGraph.Engine.multi = 1;
 
-   if (this.crashGame) {
-    if (this.crashGame.state === "created") {
-      CrashGraph.Engine.gameState = "STARTING";
-      this.crashStartTimer();
-    } else if (this.crashGame.state === "rolling") {
-      CrashGraph.Engine.gameState = "IN_PROGRESS";
-      this.crashStartMutiplier();
-    }
-  } else {
+    if (this.crashGame) {
+      if (this.crashGame.state === "created") {
+        CrashGraph.Engine.gameState = "STARTING";
+        this.crashStartTimer();
+      } else if (this.crashGame.state === "rolling") {
+        CrashGraph.Engine.gameState = "IN_PROGRESS";
+        this.crashStartMutiplier();
+      }
+    } else {
       this.crashText = "WAITING FOR NETWORK...";
     }
   },
   destroyed() {
     cancelAnimationFrame(this.crashTimerRepeater);
     cancelAnimationFrame(this.crashRunRepeater);
-    this.crashGraphInstance.stopRendering();
+    if (this.crashGraphInstance && typeof this.crashGraphInstance.stopRendering === "function") {
+      this.crashGraphInstance.stopRendering();
+    }
   },
 };
 </script>

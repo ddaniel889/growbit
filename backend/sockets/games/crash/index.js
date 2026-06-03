@@ -85,7 +85,7 @@ module.exports = (io) => {
           try {
             const user = await User.findById(socket.decoded._id)
               .select(
-                "username avatar rank balance local.emailVerified xp stats limits affiliates anonymous mute ban createdAt",
+                "username avatar rank wallet local.emailVerified xp stats limits affiliates anonymous mute ban createdAt",
               )
               .lean();
             checkVerified(user);

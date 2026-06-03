@@ -52,39 +52,46 @@ const NUMBER_OF_CRASH_SEEDS = 1000;
 
 const crashSendBetSocket = async (io, socket, user, data, callback) => {
   try {
-    // Validate sent data
     crashCheckSendBetData(data);
-
-    // Validate if user has enougth balance
-    crashCheckSendBetUser(data, user, crashBets);
-
-    // Validate if betting is allowed for current game
+    crashCheckSendBetUser(data, user, crashBets); // Ahora valida la wallet dinámica
     crashCheckSendBetGame(crashGame);
 
     try {
-      // Increase crash bet pending count by 1
       crashBetPendingCount = crashBetPendingCount + 1;
 
       const amount = data.amount;
       const autoCashout = data.autoCashout <= 1 ? 0 : data.autoCashout;
+      const currencyKey = data.currency ? data.currency.toLowerCase() : 'gc';
+
+      // Creamos el query dinámico para restar el balance de la wallet específica (wallet.gc o wallet.sc)
+      const walletUpdate = {};
+      walletUpdate[`wallet.${currencyKey}`] = -amount;
+
+      // También ajustamos las estadísticas acumuladas correspondientes (opcional pero recomendado si manejas stats separadas, si no, déjalo global)
+      const statsUpdate = { "stats.bet": amount };
 
       let promises = [
-        updateUser(0, -amount, amount, CRASH_HOUSE_EDGE, user),
+        User.findByIdAndUpdate(
+          user._id,
+          { 
+            $inc: { ...walletUpdate, ...statsUpdate },
+            updatedAt: new Date().getTime()
+          },
+          { new: true }
+        ).select("wallet xp stats rakeback mute ban verifiedAt updatedAt").lean(),
+
         CrashBet.create({
           amount: amount,
+          currency: currencyKey, // Guardamos qué moneda usó en esta apuesta
           autoCashout: autoCashout,
           game: crashGame._id,
           user: user._id,
         }),
       ];
 
-      // Execute promise queries in database
       let dataDatabase = await Promise.all(promises);
-
-      // Convert bet object to javascript object
       dataDatabase[1] = dataDatabase[1].toObject();
 
-      // Add user data to bet object
       dataDatabase[1].user = {
         _id: user._id,
         username: user.username,
@@ -96,34 +103,22 @@ const crashSendBetSocket = async (io, socket, user, data, callback) => {
         anonymous: user.anonymous,
       };
 
-      // Add crash bet to crash bets array
       crashBets.push(dataDatabase[1]);
 
-      // Send crash bet to frontend
       io.of("/crash").emit("bet", { bet: crashSanitizeBet(dataDatabase[1]) });
-
       callback({ success: true, user: dataDatabase[0] });
 
-      // Decrease crash bet pending count by 1
       crashBetPendingCount = crashBetPendingCount - 1;
-
       updateAffiliate(user, amount, CRASH_HOUSE_EDGE);
-
       socketRemoveAntiSpam(user._id);
     } catch (err) {
       socketRemoveAntiSpam(socket.decoded._id);
       crashBetPendingCount = crashBetPendingCount - 1;
-      callback({
-        success: false,
-        error: { type: "error", message: err.message },
-      });
+      callback({ success: false, error: { type: "error", message: err.message } });
     }
   } catch (err) {
     socketRemoveAntiSpam(socket.decoded._id);
-    callback({
-      success: false,
-      error: { type: "error", message: err.message },
-    });
+    callback({ success: false, error: { type: "error", message: err.message } });
   }
 };
 
@@ -419,40 +414,34 @@ const crashCheckCashouts = (io, multiplier) => {
 
 const crashBetCashout = async (io, multiplier, bet) => {
   try {
-    // Get crash bet index in crash bets array
     const betIndex = crashBets.findIndex(
       (element) => element._id.toString() === bet._id.toString(),
     );
 
-    // Handle bet cashout if its available
     if (betIndex !== -1) {
-      // Get bet payout amount
-
-      multiplier = limitMultiplier(
-        crashBets[betIndex].amount,
-        multiplier,
-        "crash",
-      );
+      multiplier = limitMultiplier(crashBets[betIndex].amount, multiplier, "crash");
       const amountPayout = crashBets[betIndex].amount * multiplier;
+      const currencyKey = crashBets[betIndex].currency || "gc"; // Extraemos qué moneda se usó
 
-      // Update crash bet multiplier
       crashBets[betIndex].payout = amountPayout;
       crashBets[betIndex].multiplier = multiplier;
 
-      // Send updated crash bet to frontend
-      io.of("/crash").emit("bet", {
-        bet: crashSanitizeBet(crashBets[betIndex]),
-      });
+      io.of("/crash").emit("bet", { bet: crashSanitizeBet(crashBets[betIndex]) });
 
-      // Update users data and update crash bet in database
+      // Generamos el incremento exacto para wallet.gc o wallet.sc
+      const walletPayout = {};
+      walletPayout[`wallet.${currencyKey}`] = amountPayout;
+
       const dataDatabase = await Promise.all([
-        updateUser(
-          amountPayout,
-          amountPayout,
-          0,
-          CRASH_HOUSE_EDGE,
-          crashBets[betIndex].user,
-        ),
+        User.findByIdAndUpdate(
+          crashBets[betIndex].user._id,
+          {
+            $inc: walletPayout, // Acreditamos el premio a la moneda correcta
+            updatedAt: new Date().getTime(),
+          },
+          { new: true }
+        ).select("wallet xp stats rakeback mute ban verifiedAt updatedAt").lean(),
+
         CrashBet.findByIdAndUpdate(
           crashBets[betIndex]._id,
           {
@@ -460,44 +449,17 @@ const crashBetCashout = async (io, multiplier, bet) => {
             multiplier: multiplier,
             updatedAt: new Date().getTime(),
           },
-          { new: true },
-        )
-          .select("amount payout actions user updatedAt createdAt multiplier")
-          .lean(),
+          { new: true }
+        ).select("amount payout actions user updatedAt createdAt multiplier currency").lean(),
       ]);
 
-      updateReports(
-        crashBets[betIndex].user,
-        crashBets[betIndex].amount,
-        amountPayout,
-        "crash",
-      );
+      updateReports(crashBets[betIndex].user, crashBets[betIndex].amount, amountPayout, "crash");
+      tryToClaim(crashBets[betIndex].user, crashBets[betIndex].amount, "crash", multiplier, io);
 
-      tryToClaim(
-        crashBets[betIndex].user,
-        crashBets[betIndex].amount,
-        "crash",
-        multiplier,
-        io,
-      );
-
-      // Send updated user to frontend
-      io.of("/general")
-        .to(dataDatabase[0]._id.toString())
-        .emit("user", { user: dataDatabase[0] });
+      io.of("/general").to(dataDatabase[0]._id.toString()).emit("user", { user: dataDatabase[0] });
 
       dataDatabase[1].game = crashSanitizeGame(crashGame);
-
-      // Add updated bet to bet list
-      // false because we're not updating the frontend with version that has nsanitized seed
-      generalAddBetsList(
-        io,
-        {
-          ...dataDatabase[1],
-          method: "crash",
-        },
-        dataDatabase[0],
-      );
+      generalAddBetsList(io, { ...dataDatabase[1], method: "crash" }, dataDatabase[0]);
     }
   } catch (err) {
     logger.error(err);
@@ -546,24 +508,29 @@ const crashInit = async (io) => {
       let promises = [];
 
       // Add crash bet update querys and user update querys to promise array
-      for (const bet of lastGame.bets) {
-        if (bet.payout === undefined) {
-          promises = [
-            ...promises,
-            CrashBet.findByIdAndUpdate(bet._id, {
-              payout: bet.amount,
-              updatedAt: new Date().getTime(),
-            }),
-            User.findByIdAndUpdate(bet.user, {
-              $inc: {
-                balance: bet.amount,
-                "stats.bet": -bet.amount,
-              },
-              updatedAt: new Date().getTime(),
-            }),
-          ];
-        }
-      }
+  for (const bet of lastGame.bets) {
+  if (bet.payout === undefined) {
+    const currencyKey = bet.currency || "gc"; 
+    
+    const refundWallet = {};
+    refundWallet[`wallet.${currencyKey}`] = bet.amount;
+
+    promises = [
+      ...promises,
+      CrashBet.findByIdAndUpdate(bet._id, {
+        payout: bet.amount,
+        updatedAt: new Date().getTime(),
+      }),
+      User.findByIdAndUpdate(bet.user, {
+        $inc: {
+          ...refundWallet, 
+          "stats.bet": -bet.amount,
+        },
+        updatedAt: new Date().getTime(),
+      }),
+    ];
+  }
+}
 
       // Combine crash game id and server seed and sha256 hash the combined string
       const combined = crypto

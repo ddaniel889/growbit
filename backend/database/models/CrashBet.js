@@ -7,6 +7,7 @@ const crashBetSchema = new mongoose.Schema({
   autoCashout: { type: Number },
   game: { type: mongoose.Schema.ObjectId, ref: "CrashGame" },
   user: { type: mongoose.Schema.ObjectId, ref: "User" },
+  currency: { type: String, enum: ["gc", "sc"], required: true, default: "gc" },
   updatedAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
 });
